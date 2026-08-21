@@ -28,6 +28,7 @@
   line-height: 1.4;
   margin-top: 1.2em;
   margin-bottom: 0.4em;
+  color: var(--iv-fg);
 }
 
 .cm-header-2 {
@@ -36,6 +37,7 @@
   line-height: 1.4;
   margin-top: 1.0em;
   margin-bottom: 0.3em;
+  color: var(--iv-fg);
 }
 
 .cm-header-3 {
@@ -44,6 +46,7 @@
   line-height: 1.4;
   margin-top: 0.8em;
   margin-bottom: 0.2em;
+  color: var(--iv-fg);
 }
 
 .cm-strong {
@@ -54,6 +57,96 @@
   font-style: italic;
 }
 
+/* Inline Code & Code Blocks */
+.cm-inline-code, .cm-monospace {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.9em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background-color: var(--iv-code-bg, rgba(125, 125, 125, 0.08));
+  color: var(--iv-fg);
+}
+
+/* Links */
+.cm-link {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  color: var(--iv-link-color, #2563EB);
+  cursor: pointer;
+}
+
 .cm-selectionBackground, ::selection {
   background-color: var(--iv-selection-bg) !important;
+}
+
+/* CodeMirror Search Panel Theming */
+.cm-panel.cm-search {
+  position: absolute;
+  top: 54px;
+  right: 24px;
+  background-color: var(--iv-hud-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--iv-hud-border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--iv-fg);
+  z-index: 900;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.cm-search input[type="text"] {
+  background-color: var(--iv-hud-btn-bg);
+  border: 1px solid var(--iv-hud-border);
+  color: var(--iv-fg);
+  padding: 4px 8px;
+  border-radius: 4px;
+  outline: none;
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.cm-search input[type="text"]:focus {
+  border-color: var(--iv-cursor-color);
+}
+
+.cm-search button {
+  background: var(--iv-hud-btn-bg);
+  border: 1px solid var(--iv-hud-border);
+  color: var(--iv-fg);
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background 0.15s ease;
+}
+
+.cm-search button:hover {
+  background: var(--iv-hud-btn-hover);
+}
+
+.cm-search label {
+  color: var(--iv-hud-fg);
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cm-searchMatch {
+  background-color: var(--iv-search-match, rgba(234, 179, 8, 0.3)) !important;
+  opacity: 1.0 !important;
+  border-radius: 2px;
+}
+
+.cm-searchMatch-selected {
+  background-color: var(--iv-search-match-selected, rgba(234, 179, 8, 0.6)) !important;
+  outline: 1px solid var(--iv-cursor-color);
+  opacity: 1.0 !important;
 }

@@ -68,4 +68,10 @@ export type WebviewToHostMessage =
         level: 'info' | 'warn' | 'error';
         message: string;
       };
+    }
+  | {
+      type: 'OPEN_LINK';
+      payload: {
+        target: string;
+      };
     };

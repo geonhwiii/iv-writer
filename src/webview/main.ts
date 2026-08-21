@@ -95,6 +95,12 @@ function initApp(): void {
                 payload: stats,
               });
             },
+            onOpenLink: (link: string) => {
+              vscode.postMessage({
+                type: 'OPEN_LINK',
+                payload: { target: link },
+              });
+            },
           }
         );
 

@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { HostToWebviewMessage, WebviewToHostMessage } from '../shared/messages';
 import { ConfigManager } from './configManager';
+import { StatusBarManager } from './statusBar';
 import { ThemePreset, FocusMode } from '../shared/settings';
 import { THEME_PRESETS } from '../shared/constants';
 
@@ -94,7 +95,27 @@ export class IVWriterEditorProvider implements vscode.CustomTextEditorProvider {
         }
 
         case 'STATS_UPDATE': {
-          // Document stats received (can be used for status bar or logs)
+          StatusBarManager.updateStats(message.payload);
+          break;
+        }
+
+        case 'OPEN_LINK': {
+          const target = message.payload.target;
+          try {
+            // Find file in workspace
+            const files = await vscode.workspace.findFiles(`**/${target}`, '**/node_modules/**', 1);
+            if (files && files.length > 0) {
+              const doc = await vscode.workspace.openTextDocument(files[0]);
+              await vscode.window.showTextDocument(doc, { preview: true, viewColumn: vscode.ViewColumn.Beside });
+            } else {
+              // Try directly as relative or absolute URI
+              const uri = vscode.Uri.file(target);
+              const doc = await vscode.workspace.openTextDocument(uri);
+              await vscode.window.showTextDocument(doc, { preview: true, viewColumn: vscode.ViewColumn.Beside });
+            }
+          } catch (err) {
+            console.warn(`[iV Writer] Could not open link target: ${target}`);
+          }
           break;
         }
 

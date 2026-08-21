@@ -2,6 +2,7 @@ import { EditorState, Extension } from '@codemirror/state';
 import { EditorView, keymap, ViewPlugin, ViewUpdate, Decoration, DecorationSet } from '@codemirror/view';
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
 import { markdown } from '@codemirror/lang-markdown';
+import { searchKeymap, search, openSearchPanel } from '@codemirror/search';
 import { FocusEngine, BlockRange } from './focusEngine';
 import { ScrollEngine } from './scrollEngine';
 import { IVWriterSettings } from '../../shared/settings';
@@ -10,6 +11,7 @@ export interface EditorCallbacks {
   onDocChange: (newContent: string) => void;
   onCursorChange: (line: number, col: number, selectionLen: number) => void;
   onStatsChange: (stats: { words: number; chars: number; charsNoSpaces: number; paragraphs: number; readingTimeMin: number }) => void;
+  onOpenLink?: (link: string) => void;
 }
 
 export class IVEditor {
@@ -34,7 +36,8 @@ export class IVEditor {
       doc: initialDoc,
       extensions: [
         history(),
-        keymap.of([...defaultKeymap, ...historyKeymap]),
+        keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap]),
+        search({ top: true }),
         markdown(),
         EditorView.lineWrapping,
         focusPlugin,
@@ -49,6 +52,18 @@ export class IVEditor {
             this.scrollEngine.scrollToCursor();
             return false;
           },
+          click: (event: MouseEvent) => {
+            const target = event.target as HTMLElement;
+            if (target && (event.metaKey || event.ctrlKey)) {
+              const text = target.textContent || '';
+              // Check if code file reference like `src/...` or file://
+              const match = text.match(/(?:file:\/\/\/?)?([a-zA-Z0-9_\-./]+\.[a-zA-Z0-9]+)/);
+              if (match && this.callbacks.onOpenLink) {
+                this.callbacks.onOpenLink(match[1]);
+              }
+            }
+            return false;
+          }
         }),
       ],
     });
@@ -96,7 +111,9 @@ export class IVEditor {
           const settings = editorInstance.currentSettings.focus;
           const doc = view.state.doc;
           const text = doc.toString();
-          const cursorPos = view.state.selection.main.head;
+          const mainSelection = view.state.selection.main;
+          const cursorPos = mainSelection.head;
+          const hasSelection = mainSelection.from !== mainSelection.to;
 
           if (!settings.enabled) {
             return Decoration.none;
@@ -122,14 +139,20 @@ export class IVEditor {
             while (pos <= to) {
               const line = doc.lineAt(pos);
               
+              // 해당 line이 선택 영역과 겹치는지 확인
+              const isSelected =
+                hasSelection &&
+                line.from <= mainSelection.to &&
+                line.to >= mainSelection.from;
+
               // 해당 line이 속한 블록의 visual state 찾기
               const state = visualStates.find(
                 (vs) => line.from >= vs.from && line.from <= vs.to
               );
 
               if (state) {
-                const isFocused = state.isFocused;
-                const opacity = state.opacity;
+                const isFocused = isSelected || state.isFocused;
+                const opacity = isSelected ? 1.0 : state.opacity;
                 
                 const lineClass = isFocused ? 'iv-line-focused' : 'iv-line-faded';
                 const deco = Decoration.line({
