@@ -1,0 +1,65 @@
+/* Theme Variables */
+
+/* Paper Theme (Default Warm Ivory) */
+body[data-theme="paper"] {
+  --iv-bg: #F7F4EB;
+  --iv-fg: #2C2825;
+  --iv-fg-faded: #9C968D;
+  --iv-cursor-color: #2C2825;
+  --iv-focus-indicator: rgba(214, 168, 95, 0.09);
+  --iv-focus-line: rgba(214, 168, 95, 0.5);
+  --iv-selection-bg: rgba(66, 153, 225, 0.22);
+  --iv-hud-bg: rgba(247, 244, 235, 0.88);
+  --iv-hud-border: rgba(44, 40, 37, 0.08);
+  --iv-hud-fg: #78716A;
+  --iv-hud-btn-bg: rgba(44, 40, 37, 0.04);
+  --iv-hud-btn-hover: rgba(44, 40, 37, 0.08);
+}
+
+/* Dark Theme (Modern Sleek Matte) */
+body[data-theme="dark"] {
+  --iv-bg: #18181A;
+  --iv-fg: #E4E4E7;
+  --iv-fg-faded: #52525B;
+  --iv-cursor-color: #38BDF8;
+  --iv-focus-indicator: rgba(255, 255, 255, 0.04);
+  --iv-focus-line: rgba(56, 189, 248, 0.4);
+  --iv-selection-bg: rgba(56, 189, 248, 0.25);
+  --iv-hud-bg: rgba(24, 24, 26, 0.88);
+  --iv-hud-border: rgba(255, 255, 255, 0.08);
+  --iv-hud-fg: #A1A1AA;
+  --iv-hud-btn-bg: rgba(255, 255, 255, 0.06);
+  --iv-hud-btn-hover: rgba(255, 255, 255, 0.12);
+}
+
+/* Sepia Theme (Vintage Paper & Book) */
+body[data-theme="sepia"] {
+  --iv-bg: #F3E9D2;
+  --iv-fg: #443627;
+  --iv-fg-faded: #9C8A76;
+  --iv-cursor-color: #C96868;
+  --iv-focus-indicator: rgba(180, 130, 80, 0.08);
+  --iv-focus-line: rgba(201, 104, 104, 0.45);
+  --iv-selection-bg: rgba(201, 104, 104, 0.2);
+  --iv-hud-bg: rgba(243, 233, 210, 0.88);
+  --iv-hud-border: rgba(68, 54, 39, 0.08);
+  --iv-hud-fg: #7D6C58;
+  --iv-hud-btn-bg: rgba(68, 54, 39, 0.05);
+  --iv-hud-btn-hover: rgba(68, 54, 39, 0.1);
+}
+
+/* Midnight Theme (Deep Night Indigo) */
+body[data-theme="midnight"] {
+  --iv-bg: #0F172A;
+  --iv-fg: #E2E8F0;
+  --iv-fg-faded: #475569;
+  --iv-cursor-color: #818CF8;
+  --iv-focus-indicator: rgba(99, 102, 241, 0.06);
+  --iv-focus-line: rgba(129, 140, 248, 0.4);
+  --iv-selection-bg: rgba(129, 140, 248, 0.25);
+  --iv-hud-bg: rgba(15, 23, 42, 0.88);
+  --iv-hud-border: rgba(255, 255, 255, 0.08);
+  --iv-hud-fg: #94A3B8;
+  --iv-hud-btn-bg: rgba(255, 255, 255, 0.06);
+  --iv-hud-btn-hover: rgba(255, 255, 255, 0.12);
+}

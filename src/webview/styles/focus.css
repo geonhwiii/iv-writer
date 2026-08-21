@@ -1,0 +1,27 @@
+/* Focus & Fading Styles */
+
+.iv-line-focused {
+  opacity: 1.0 !important;
+}
+
+/* Background indicator */
+body[data-focusline-style="background"] .iv-line-focused {
+  background-color: var(--iv-focus-indicator);
+  border-radius: 4px;
+}
+
+/* Left-border indicator */
+body[data-focusline-style="left-border"] .iv-line-focused {
+  border-left: 2.5px solid var(--iv-focus-line);
+  padding-left: 8px;
+}
+
+/* Underline indicator */
+body[data-focusline-style="underline"] .iv-line-focused {
+  border-bottom: 1px solid var(--iv-focus-line);
+}
+
+.iv-line-faded {
+  /* Opacity is dynamically set via decoration style */
+  will-change: opacity;
+}

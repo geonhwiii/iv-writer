@@ -1,0 +1,138 @@
+@import './themes.css';
+@import './typography.css';
+@import './focus.css';
+@import './cursor.css';
+
+/* Global Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--iv-bg);
+  color: var(--iv-fg);
+  user-select: text;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.iv-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.iv-editor-container {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.cm-editor {
+  width: 100%;
+  height: 100%;
+}
+
+.cm-scroller {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  scrollbar-width: none; /* Hide scrollbar for immersion */
+}
+
+.cm-scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.cm-focused {
+  outline: none !important;
+}
+
+/* Minimal Auto-hide Header HUD */
+.iv-hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--iv-hud-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--iv-hud-border);
+  z-index: 1000;
+  opacity: 0;
+  transform: translateY(-100%);
+  transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+/* Reveal HUD on hover or when mouse is near top */
+.iv-container:hover .iv-hud,
+.iv-hud:hover {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.iv-brand {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--iv-fg);
+  text-transform: uppercase;
+}
+
+.iv-hud-center {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--iv-hud-fg);
+  font-variant-numeric: tabular-nums;
+}
+
+.iv-stat-dot {
+  opacity: 0.4;
+}
+
+.iv-hud-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.iv-hud-btn {
+  background: var(--iv-hud-btn-bg);
+  border: 1px solid var(--iv-hud-border);
+  color: var(--iv-fg);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.iv-hud-btn:hover {
+  background: var(--iv-hud-btn-hover);
+}
+
+.iv-hud-btn:active {
+  transform: scale(0.96);
+}
+
+.iv-hud-btn.active {
+  background: var(--iv-focus-indicator);
+  border-color: var(--iv-focus-line);
+}

@@ -1,0 +1,59 @@
+/* Typography Styles */
+
+.cm-editor {
+  font-family: var(--iv-font-family, system-ui, -apple-system, BlinkMacSystemFont, 'Pretendard', sans-serif);
+  font-size: var(--iv-font-size, 19px);
+  line-height: var(--iv-line-height, 1.85);
+  letter-spacing: var(--iv-letter-spacing, -0.01em);
+  color: var(--iv-fg);
+  background-color: var(--iv-bg);
+}
+
+.cm-content {
+  max-width: var(--iv-max-width, 720px);
+  margin: 0 auto;
+  padding: 120px 24px 60vh 24px; /* Sufficient breathing room at top and bottom */
+  caret-color: var(--iv-cursor-color);
+  word-break: break-word;
+}
+
+.cm-line {
+  padding: 0 4px;
+}
+
+/* Markdown subtle formatting */
+.cm-header-1 {
+  font-size: 1.45em;
+  font-weight: 700;
+  line-height: 1.4;
+  margin-top: 1.2em;
+  margin-bottom: 0.4em;
+}
+
+.cm-header-2 {
+  font-size: 1.25em;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-top: 1.0em;
+  margin-bottom: 0.3em;
+}
+
+.cm-header-3 {
+  font-size: 1.1em;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-top: 0.8em;
+  margin-bottom: 0.2em;
+}
+
+.cm-strong {
+  font-weight: 600;
+}
+
+.cm-emphasis {
+  font-style: italic;
+}
+
+.cm-selectionBackground, ::selection {
+  background-color: var(--iv-selection-bg) !important;
+}

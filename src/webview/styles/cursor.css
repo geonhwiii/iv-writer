@@ -1,0 +1,55 @@
+/* Caret & Cursor Styles */
+
+/* Fade Animation */
+@keyframes iv-cursor-fade {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}
+
+/* Pulse Animation */
+@keyframes iv-cursor-pulse {
+  0%, 100% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scaleY(0.7);
+    opacity: 0.4;
+  }
+}
+
+.cm-cursor {
+  border-left-color: var(--iv-cursor-color) !important;
+  border-left-width: var(--iv-cursor-width, 2px) !important;
+}
+
+body[data-cursor-anim="fade"] .cm-cursor {
+  animation: iv-cursor-fade 1.0s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+body[data-cursor-anim="pulse"] .cm-cursor {
+  animation: iv-cursor-pulse 1.0s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+body[data-cursor-anim="solid"] .cm-cursor {
+  animation: none !important;
+  opacity: 1 !important;
+}
+
+/* Block Cursor Style */
+body[data-cursor-style="block"] .cm-cursor {
+  border-left-width: 0.6em !important;
+  opacity: 0.6;
+}
+
+/* Underline Cursor Style */
+body[data-cursor-style="underline"] .cm-cursor {
+  border-left-width: 0 !important;
+  border-bottom: 2px solid var(--iv-cursor-color) !important;
+  height: 2px !important;
+  margin-top: calc(var(--iv-font-size, 19px) * var(--iv-line-height, 1.85) - 4px);
+}
