@@ -3,8 +3,13 @@
   "displayName": "iV Writer",
   "description": "Writer Mode on VSCode",
   "version": "0.0.1",
+  "publisher": "geonhwiii",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/geonhwiii/iv-writer.git"
+  },
   "engines": {
-    "vscode": "^1.134.0"
+    "vscode": "^1.85.0"
   },
   "categories": [
     "Other"
@@ -249,7 +254,7 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.134.0",
+    "@types/vscode": "^1.85.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "24.x",
     "typescript-eslint": "^8.61.1",
