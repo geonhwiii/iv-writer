@@ -67,6 +67,16 @@
         "command": "iv-writer.showQuickMenu",
         "title": "iV Writer: Show Quick Menu",
         "category": "iV Writer"
+      },
+      {
+        "command": "iv-writer.applyPreset",
+        "title": "iV Writer: Apply Writing Preset",
+        "category": "iV Writer"
+      },
+      {
+        "command": "iv-writer.showStatistics",
+        "title": "iV Writer: View Document Statistics",
+        "category": "iV Writer"
       }
     ],
     "keybindings": [

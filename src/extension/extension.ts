@@ -3,6 +3,7 @@ import { IVWriterEditorProvider } from './editorProvider';
 import { HostToWebviewMessage } from '../shared/messages';
 import { StatusBarManager } from './statusBar';
 import { DailyNotesManager } from './dailyNotes';
+import { PresetManager } from './presets';
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('[iV Writer] Extension activating...');
@@ -90,11 +91,25 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
+    vscode.commands.registerCommand('iv-writer.applyPreset', async () => {
+      await PresetManager.selectAndApplyPreset();
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand('iv-writer.showStatistics', () => {
+      StatusBarManager.showStatisticsDialog();
+    })
+  );
+
+  context.subscriptions.push(
     vscode.commands.registerCommand('iv-writer.showQuickMenu', async () => {
       const items = [
         { label: '$(symbol-text) Toggle Focus Mode', description: 'Toggle Focus / Normal', action: 'toggleFocus' },
         { label: '$(sync) Cycle Focus Mode', description: 'Paragraph -> Line -> Off', action: 'cycleFocus' },
         { label: '$(color-mode) Cycle Writing Theme', description: 'Paper, Dark, Sepia, Midnight', action: 'cycleTheme' },
+        { label: '$(sparkle) Apply Writing Preset...', description: 'iA-like, Paper, Dark Writer, Typewriter', action: 'applyPreset' },
+        { label: '$(graph) View Document Statistics', description: 'Detailed words, chars, reading time', action: 'statistics' },
         { label: '$(screen-full) Toggle Zen Mode', description: 'Distraction-free workspace', action: 'toggleZen' },
         { label: '$(calendar) Create Daily Note', description: 'Open today\'s note in notes/YYYY-MM-DD.md', action: 'dailyNote' },
       ];
@@ -116,6 +131,12 @@ export function activate(context: vscode.ExtensionContext) {
           break;
         case 'cycleTheme':
           vscode.commands.executeCommand('iv-writer.cycleTheme');
+          break;
+        case 'applyPreset':
+          vscode.commands.executeCommand('iv-writer.applyPreset');
+          break;
+        case 'statistics':
+          vscode.commands.executeCommand('iv-writer.showStatistics');
           break;
         case 'toggleZen':
           vscode.commands.executeCommand('iv-writer.toggleZenMode');
