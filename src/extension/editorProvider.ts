@@ -119,6 +119,11 @@ export class IVWriterEditorProvider implements vscode.CustomTextEditorProvider {
           break;
         }
 
+        case 'SHOW_MENU': {
+          vscode.commands.executeCommand('iv-writer.showQuickMenu');
+          break;
+        }
+
         case 'LOG': {
           const { level, message: logMsg } = message.payload;
           if (level === 'error') {
@@ -190,26 +195,19 @@ export class IVWriterEditorProvider implements vscode.CustomTextEditorProvider {
 </head>
 <body>
   <div id="app" class="iv-container">
-    <!-- Auto-hide Minimal Header HUD -->
-    <header id="iv-hud" class="iv-hud">
-      <div class="iv-hud-left">
-        <span class="iv-brand">iV Writer</span>
-      </div>
-      <div class="iv-hud-center">
-        <span id="stat-words" class="iv-stat-item">0 words</span>
-        <span class="iv-stat-dot">•</span>
-        <span id="stat-chars" class="iv-stat-item">0 chars</span>
-        <span class="iv-stat-dot">•</span>
-        <span id="stat-readtime" class="iv-stat-item">1 min read</span>
-      </div>
-      <div class="iv-hud-right">
-        <button id="btn-focus-mode" class="iv-hud-btn" title="Toggle Focus Mode">Paragraph</button>
-        <button id="btn-theme" class="iv-hud-btn" title="Cycle Theme">Paper</button>
-      </div>
-    </header>
-
     <!-- Main Editor Mount Point -->
     <main id="editor-container" class="iv-editor-container"></main>
+
+    <!-- iA Writer Bottom Floating Stats Pill Bar (Auto-hide) -->
+    <div id="iv-hud" class="iv-hud">
+      <div class="iv-stat-pill">
+        <span id="stat-chars">0 Characters</span>
+        <span id="stat-chars-no-space">0 Without Spaces</span>
+        <span id="stat-words">0 Words</span>
+        <span id="stat-sentences">0 Sentences</span>
+        <span id="stat-reading-time">00:00:00 Reading Time</span>
+      </div>
+    </div>
   </div>
 
   <script nonce="${nonce}" src="${scriptUri}"></script>

@@ -19,6 +19,7 @@ html, body {
   user-select: text;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .iv-container {
@@ -44,7 +45,7 @@ html, body {
 .cm-scroller {
   overflow-x: hidden !important;
   overflow-y: auto !important;
-  scrollbar-width: none; /* Hide scrollbar for immersion */
+  scrollbar-width: none; /* Hide scrollbar for pure immersion */
 }
 
 .cm-scroller::-webkit-scrollbar {
@@ -55,84 +56,42 @@ html, body {
   outline: none !important;
 }
 
-/* Minimal Auto-hide Header HUD */
+/* iA Writer Bottom Floating Stats Pill Bar (Exact Match from Reference Image) */
 .iv-hud {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 48px;
-  padding: 0 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: var(--iv-hud-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--iv-hud-border);
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 1000;
   opacity: 0;
-  transform: translateY(-100%);
-  transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
+  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Reveal HUD on hover or when mouse is near top */
-.iv-container:hover .iv-hud,
+.iv-hud.visible,
 .iv-hud:hover {
   opacity: 1;
-  transform: translateY(0);
   pointer-events: auto;
 }
 
-.iv-brand {
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  color: var(--iv-fg);
-  text-transform: uppercase;
-}
-
-.iv-hud-center {
+.iv-stat-pill {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--iv-hud-fg);
-  font-variant-numeric: tabular-nums;
-}
-
-.iv-stat-dot {
-  opacity: 0.4;
-}
-
-.iv-hud-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.iv-hud-btn {
-  background: var(--iv-hud-btn-bg);
+  gap: 16px;
+  padding: 6px 18px;
+  background-color: var(--iv-hud-bg);
   border: 1px solid var(--iv-hud-border);
-  color: var(--iv-fg);
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 12px;
   font-weight: 500;
-  padding: 4px 10px;
-  border-radius: 6px;
+  color: var(--iv-hud-fg);
+  white-space: nowrap;
+  user-select: none;
   cursor: pointer;
-  transition: background 0.15s ease, transform 0.1s ease;
 }
 
-.iv-hud-btn:hover {
-  background: var(--iv-hud-btn-hover);
-}
-
-.iv-hud-btn:active {
-  transform: scale(0.96);
-}
-
-.iv-hud-btn.active {
-  background: var(--iv-focus-indicator);
-  border-color: var(--iv-focus-line);
+.iv-stat-pill span {
+  letter-spacing: 0.01em;
 }

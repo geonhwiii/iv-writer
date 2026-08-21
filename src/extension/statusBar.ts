@@ -7,8 +7,10 @@ export class StatusBarManager {
     words: 0,
     chars: 0,
     charsNoSpaces: 0,
+    sentences: 0,
     paragraphs: 0,
     readingTimeMin: 1,
+    readingTimeFormatted: '00:00:00',
   };
 
   public static initialize(context: vscode.ExtensionContext): void {

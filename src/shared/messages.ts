@@ -4,8 +4,10 @@ export interface DocumentStats {
   words: number;
   chars: number;
   charsNoSpaces: number;
+  sentences: number;
   paragraphs: number;
   readingTimeMin: number;
+  readingTimeFormatted: string;
 }
 
 export type HostToWebviewMessage =
@@ -74,4 +76,7 @@ export type WebviewToHostMessage =
       payload: {
         target: string;
       };
+    }
+  | {
+      type: 'SHOW_MENU';
     };

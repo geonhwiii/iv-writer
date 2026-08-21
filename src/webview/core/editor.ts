@@ -3,14 +3,16 @@ import { EditorView, keymap, ViewPlugin, ViewUpdate, Decoration, DecorationSet }
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
 import { markdown } from '@codemirror/lang-markdown';
 import { searchKeymap, search, openSearchPanel } from '@codemirror/search';
-import { FocusEngine, BlockRange } from './focusEngine';
+import { FocusEngine } from './focusEngine';
 import { ScrollEngine } from './scrollEngine';
 import { IVWriterSettings } from '../../shared/settings';
+
+import { DocumentStats } from '../../shared/messages';
 
 export interface EditorCallbacks {
   onDocChange: (newContent: string) => void;
   onCursorChange: (line: number, col: number, selectionLen: number) => void;
-  onStatsChange: (stats: { words: number; chars: number; charsNoSpaces: number; paragraphs: number; readingTimeMin: number }) => void;
+  onStatsChange: (stats: DocumentStats) => void;
   onOpenLink?: (link: string) => void;
 }
 
@@ -115,65 +117,45 @@ export class IVEditor {
           const cursorPos = mainSelection.head;
           const hasSelection = mainSelection.from !== mainSelection.to;
 
-          if (!settings.enabled) {
+          if (!settings.enabled || text.length === 0) {
             return Decoration.none;
           }
 
-          const blocks =
-            settings.mode === 'paragraph'
-              ? FocusEngine.extractParagraphBlocks(text)
-              : FocusEngine.extractLineBlocks(text);
+          let activeRange: { from: number; to: number };
+          if (hasSelection) {
+            activeRange = { from: Math.min(mainSelection.from, mainSelection.to), to: Math.max(mainSelection.from, mainSelection.to) };
+          } else {
+            const ranges =
+              settings.mode === 'sentence'
+                ? FocusEngine.extractSentenceRanges(text)
+                : settings.mode === 'paragraph'
+                ? FocusEngine.extractParagraphRanges(text)
+                : FocusEngine.extractLineRanges(text);
 
-          const activeIndex = FocusEngine.findActiveBlockIndex(blocks, cursorPos);
-          const visualStates = FocusEngine.calculateBlockVisualStates(
-            blocks,
-            activeIndex,
-            settings
-          );
+            activeRange = FocusEngine.findActiveRange(ranges, cursorPos);
+          }
 
-          const builder: { from: number; deco: Decoration }[] = [];
+          const dimmedRanges = FocusEngine.calculateDimmedRanges(text.length, activeRange);
+          const builder: { from: number; to: number; deco: Decoration }[] = [];
 
-          // Viewport 내 라인들에 데코레이션 적용
-          for (const { from, to } of view.visibleRanges) {
-            let pos = from;
-            while (pos <= to) {
-              const line = doc.lineAt(pos);
-              
-              // 해당 line이 선택 영역과 겹치는지 확인
-              const isSelected =
-                hasSelection &&
-                line.from <= mainSelection.to &&
-                line.to >= mainSelection.from;
+          const dimDeco = Decoration.mark({
+            class: 'iv-dimmed',
+          });
 
-              // 해당 line이 속한 블록의 visual state 찾기
-              const state = visualStates.find(
-                (vs) => line.from >= vs.from && line.from <= vs.to
-              );
-
-              if (state) {
-                const isFocused = isSelected || state.isFocused;
-                const opacity = isSelected ? 1.0 : state.opacity;
-                
-                const lineClass = isFocused ? 'iv-line-focused' : 'iv-line-faded';
-                const deco = Decoration.line({
-                  attributes: {
-                    class: lineClass,
-                    style: `opacity: ${opacity}; transition: opacity ${settings.transitionDuration || 200}ms ease-out;`,
-                  },
-                });
-
-                builder.push({ from: line.from, deco });
-              }
-
-              pos = line.to + 1;
+          for (const d of dimmedRanges) {
+            if (d.from < d.to) {
+              builder.push({
+                from: d.from,
+                to: d.to,
+                deco: dimDeco,
+              });
             }
           }
 
           builder.sort((a, b) => a.from - b.from);
-          const decoSet = Decoration.set(
-            builder.map((item) => item.deco.range(item.from))
+          return Decoration.set(
+            builder.map((item) => item.deco.range(item.from, item.to))
           );
-          return decoSet;
         }
       },
       {
@@ -184,6 +166,7 @@ export class IVEditor {
 
   private handleEditorUpdate(update: ViewUpdate): void {
     if (update.docChanged) {
+      this.scrollEngine.resetUserScroll();
       const newText = update.state.doc.toString();
       this.computeDocumentStats(newText);
 
@@ -218,20 +201,33 @@ export class IVEditor {
     const trimmed = text.trim();
     const words = trimmed.length > 0 ? trimmed.split(/\s+/).length : 0;
     
+    // Sentences
+    const sentences = FocusEngine.extractSentenceRanges(text).filter((r) => {
+      const s = text.slice(r.from, r.to).trim();
+      return s.length > 0;
+    }).length;
+
     // Paragraphs
     const paragraphs = text
       .split(/\n\s*\n/)
       .filter((p) => p.trim().length > 0).length;
 
     // Reading speed: approx 200 words / min (or 500 chars / min for CJK)
-    const readingTimeMin = Math.max(1, Math.ceil(charsNoSpaces / 500));
+    const totalSeconds = Math.max(1, Math.round((charsNoSpaces / 500) * 60));
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    const readingTimeFormatted = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    const readingTimeMin = Math.max(1, Math.ceil(totalSeconds / 60));
 
     this.callbacks.onStatsChange({
       words,
       chars,
       charsNoSpaces,
+      sentences,
       paragraphs,
       readingTimeMin,
+      readingTimeFormatted,
     });
   }
 
@@ -264,6 +260,8 @@ export class IVEditor {
   public cycleFocusMode(): void {
     if (!this.currentSettings.focus.enabled) {
       this.currentSettings.focus.enabled = true;
+      this.currentSettings.focus.mode = 'sentence';
+    } else if (this.currentSettings.focus.mode === 'sentence') {
       this.currentSettings.focus.mode = 'paragraph';
     } else if (this.currentSettings.focus.mode === 'paragraph') {
       this.currentSettings.focus.mode = 'line';

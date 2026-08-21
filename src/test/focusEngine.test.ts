@@ -1,80 +1,57 @@
 import * as assert from 'assert';
 import { FocusEngine } from '../webview/core/focusEngine';
-import { FocusSettings } from '../shared/settings';
 
-describe('FocusEngine Test Suite', () => {
-  const sampleText = `첫 번째 문단입니다.
-여기는 같은 문단의 두 번째 줄입니다.
+describe('FocusEngine Test Suite (iA Writer Focus Algorithms)', () => {
+  const sampleText = `첫 번째 문장입니다. 두 번째 문장입니다! 세 번째 문장인가요?
 
-두 번째 문단입니다.
-여러 줄에 걸쳐서 생각을 정리합니다.
+새로운 문단입니다. 여기도 또 다른 문장입니다.`;
 
-세 번째 문단입니다. 마지막 문단입니다.`;
+  test('extractSentenceRanges accurately separates sentences by punctuation', () => {
+    const ranges = FocusEngine.extractSentenceRanges(sampleText);
+    assert.ok(ranges.length >= 5);
 
-  test('extractParagraphBlocks partitions text by empty lines', () => {
-    const blocks = FocusEngine.extractParagraphBlocks(sampleText);
+    // 첫 번째 문장 검증
+    const s1 = sampleText.slice(ranges[0].from, ranges[0].to);
+    assert.strictEqual(s1.includes('첫 번째 문장입니다.'), true);
+
+    // 두 번째 문장 검증
+    const s2 = sampleText.slice(ranges[1].from, ranges[1].to);
+    assert.strictEqual(s2.includes('두 번째 문장입니다!'), true);
+  });
+
+  test('extractParagraphRanges accurately separates paragraphs by empty lines', () => {
+    const ranges = FocusEngine.extractParagraphRanges(sampleText);
+    assert.strictEqual(ranges.length, 2);
+
+    const p1 = sampleText.slice(ranges[0].from, ranges[0].to);
+    assert.strictEqual(p1.includes('첫 번째 문장입니다.'), true);
+
+    const p2 = sampleText.slice(ranges[1].from, ranges[1].to);
+    assert.strictEqual(p2.includes('새로운 문단입니다.'), true);
+  });
+
+  test('findActiveRange correctly locates active sentence by cursor position', () => {
+    const ranges = FocusEngine.extractSentenceRanges(sampleText);
     
-    // sampleText에는 3개의 텍스트 문단과 2개의 빈 줄 블록이 분할됨
-    assert.ok(blocks.length >= 3);
-    assert.strictEqual(blocks[0].text.includes('첫 번째 문단'), true);
+    // 커서가 첫 번째 문장 안에 있을 때
+    const activeRange0 = FocusEngine.findActiveRange(ranges, 5);
+    assert.strictEqual(activeRange0.from, ranges[0].from);
+    assert.strictEqual(activeRange0.to, ranges[0].to);
+
+    // 커서가 두 번째 문장 안에 있을 때
+    const secondSentenceStart = ranges[1].from + 2;
+    const activeRange1 = FocusEngine.findActiveRange(ranges, secondSentenceStart);
+    assert.strictEqual(activeRange1.from, ranges[1].from);
+    assert.strictEqual(activeRange1.to, ranges[1].to);
   });
 
-  test('extractLineBlocks partitions text line by line', () => {
-    const blocks = FocusEngine.extractLineBlocks(sampleText);
-    const expectedLineCount = sampleText.split('\n').length;
-    assert.strictEqual(blocks.length, expectedLineCount);
-  });
+  test('calculateDimmedRanges creates exact outer ranges for dimming', () => {
+    const activeRange = { from: 10, to: 20 };
+    const totalLength = 50;
+    const dimmed = FocusEngine.calculateDimmedRanges(totalLength, activeRange);
 
-  test('findActiveBlockIndex finds correct active block by cursor offset', () => {
-    const blocks = FocusEngine.extractParagraphBlocks(sampleText);
-    // Cursor inside the first block
-    const activeIndex0 = FocusEngine.findActiveBlockIndex(blocks, 5);
-    assert.strictEqual(activeIndex0, 0);
-
-    // Cursor near the end of sample text
-    const activeIndexLast = FocusEngine.findActiveBlockIndex(blocks, sampleText.length - 2);
-    assert.strictEqual(activeIndexLast, blocks.length - 1);
-  });
-
-  test('calculateBlockVisualStates computes correct opacity with easing decay', () => {
-    const blocks = FocusEngine.extractParagraphBlocks(sampleText);
-    const settings: FocusSettings = {
-      enabled: true,
-      mode: 'paragraph',
-      anchor: 0.45,
-      fadeDistance: 6,
-      minimumOpacity: 0.12,
-      fadePower: 2.0,
-    };
-
-    const activeIndex = 0;
-    const states = FocusEngine.calculateBlockVisualStates(blocks, activeIndex, settings);
-
-    // Active block should have 1.0 opacity and isFocused = true
-    assert.strictEqual(states[0].isFocused, true);
-    assert.strictEqual(states[0].opacity, 1.0);
-
-    // Further blocks should have lower opacity
-    if (states.length > 1) {
-      assert.strictEqual(states[1].isFocused, false);
-      assert.ok(states[1].opacity <= 1.0);
-    }
-  });
-
-  test('calculateBlockVisualStates returns full opacity when focus mode is disabled', () => {
-    const blocks = FocusEngine.extractParagraphBlocks(sampleText);
-    const settings: FocusSettings = {
-      enabled: false,
-      mode: 'paragraph',
-      anchor: 0.45,
-      fadeDistance: 6,
-      minimumOpacity: 0.12,
-      fadePower: 2.0,
-    };
-
-    const states = FocusEngine.calculateBlockVisualStates(blocks, 0, settings);
-    states.forEach((s) => {
-      assert.strictEqual(s.opacity, 1.0);
-    });
+    assert.strictEqual(dimmed.length, 2);
+    assert.deepStrictEqual(dimmed[0], { from: 0, to: 10 });
+    assert.deepStrictEqual(dimmed[1], { from: 20, to: 50 });
   });
 });

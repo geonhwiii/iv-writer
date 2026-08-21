@@ -134,9 +134,9 @@
         },
         "ivWriter.focus.mode": {
           "type": "string",
-          "enum": ["paragraph", "line"],
-          "default": "paragraph",
-          "description": "Focus unit: Paragraph focus or Line focus."
+          "enum": ["sentence", "paragraph", "line"],
+          "default": "sentence",
+          "description": "Focus unit: Sentence focus (iA Writer signature), Paragraph focus, or Line focus."
         },
         "ivWriter.focus.anchor": {
           "type": "number",

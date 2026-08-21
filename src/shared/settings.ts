@@ -1,4 +1,4 @@
-export type FocusMode = 'paragraph' | 'line';
+export type FocusMode = 'sentence' | 'paragraph' | 'line';
 export type CursorStyle = 'bar' | 'block' | 'underline';
 export type CursorAnimation = 'fade' | 'pulse' | 'blink' | 'solid';
 export type FocusLineStyle = 'background' | 'left-border' | 'underline' | 'none';

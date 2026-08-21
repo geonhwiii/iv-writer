@@ -6,7 +6,7 @@ export class ScrollEngine {
   private targetScrollTop: number = 0;
   private animationStartTime: number = 0;
   private startScrollTop: number = 0;
-  private duration: number = 180; // ms
+  private duration: number = 160; // ms for snappy, responsive typewriter feel
   private isUserScrolling: boolean = false;
   private userScrollTimeout: any = null;
 
@@ -31,6 +31,14 @@ export class ScrollEngine {
     }
   }
 
+  public resetUserScroll(): void {
+    this.isUserScrolling = false;
+    if (this.userScrollTimeout) {
+      clearTimeout(this.userScrollTimeout);
+      this.userScrollTimeout = null;
+    }
+  }
+
   private setupScrollListener(): void {
     this.view.scrollDOM.addEventListener('wheel', () => {
       this.isUserScrolling = true;
@@ -39,7 +47,7 @@ export class ScrollEngine {
       }
       this.userScrollTimeout = setTimeout(() => {
         this.isUserScrolling = false;
-      }, 500);
+      }, 600);
     }, { passive: true });
   }
 
@@ -70,8 +78,8 @@ export class ScrollEngine {
     const cursorRelativeY = coords.top - scrollRect.top;
     const offset = cursorRelativeY - anchorY;
 
-    // 미세한 3px 이내 차이는 스크롤 스킵 (떨림 방지)
-    if (Math.abs(offset) < 4 && !immediate) {
+    // 미세한 2px 이내 차이는 스크롤 스킵 (떨림 방지)
+    if (Math.abs(offset) < 3 && !immediate) {
       return;
     }
 
