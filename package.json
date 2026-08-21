@@ -9,15 +9,204 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onCustomEditor:iv-writer.editor"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
+    "customEditors": [
+      {
+        "viewType": "iv-writer.editor",
+        "displayName": "iV Writer Focus Editor",
+        "selector": [
+          {
+            "filenamePattern": "*.md"
+          },
+          {
+            "filenamePattern": "*.markdown"
+          },
+          {
+            "filenamePattern": "*.txt"
+          }
+        ],
+        "priority": "option"
+      }
+    ],
     "commands": [
       {
-        "command": "iv-writer.helloWorld",
-        "title": "Hello World"
+        "command": "iv-writer.openWriterMode",
+        "title": "iV Writer: Open in Writer Mode",
+        "category": "iV Writer"
+      },
+      {
+        "command": "iv-writer.toggleFocusMode",
+        "title": "iV Writer: Toggle Focus Mode",
+        "category": "iV Writer"
+      },
+      {
+        "command": "iv-writer.cycleFocusMode",
+        "title": "iV Writer: Cycle Focus Mode (Paragraph / Line / Off)",
+        "category": "iV Writer"
+      },
+      {
+        "command": "iv-writer.cycleTheme",
+        "title": "iV Writer: Cycle Writing Theme",
+        "category": "iV Writer"
+      },
+      {
+        "command": "iv-writer.toggleZenMode",
+        "title": "iV Writer: Toggle Zen Mode",
+        "category": "iV Writer"
       }
-    ]
+    ],
+    "keybindings": [
+      {
+        "command": "iv-writer.openWriterMode",
+        "key": "ctrl+shift+w",
+        "mac": "cmd+shift+w",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "iv-writer.toggleFocusMode",
+        "key": "ctrl+/",
+        "mac": "cmd+/",
+        "when": "activeCustomEditorId == 'iv-writer.editor'"
+      },
+      {
+        "command": "iv-writer.cycleTheme",
+        "key": "ctrl+k ctrl+t",
+        "mac": "cmd+k cmd+t",
+        "when": "activeCustomEditorId == 'iv-writer.editor'"
+      },
+      {
+        "command": "iv-writer.toggleZenMode",
+        "key": "ctrl+k ctrl+z",
+        "mac": "cmd+k cmd+z",
+        "when": "activeCustomEditorId == 'iv-writer.editor'"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "iv-writer.openWriterMode",
+          "group": "navigation",
+          "when": "resourceExtname =~ /\\.(md|markdown|txt)$/"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "iV Writer",
+      "properties": {
+        "ivWriter.focus.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable cursor-centered focus writing mode."
+        },
+        "ivWriter.focus.mode": {
+          "type": "string",
+          "enum": ["paragraph", "line"],
+          "default": "paragraph",
+          "description": "Focus unit: Paragraph focus or Line focus."
+        },
+        "ivWriter.focus.anchor": {
+          "type": "number",
+          "default": 0.45,
+          "minimum": 0.2,
+          "maximum": 0.8,
+          "description": "Typewriter scroll vertical anchor position on screen (0.45 = 45% from top)."
+        },
+        "ivWriter.focus.fadeDistance": {
+          "type": "number",
+          "default": 6,
+          "minimum": 1,
+          "maximum": 15,
+          "description": "Number of blocks/lines over which text fades."
+        },
+        "ivWriter.focus.minimumOpacity": {
+          "type": "number",
+          "default": 0.12,
+          "minimum": 0.0,
+          "maximum": 0.5,
+          "description": "Minimum opacity for non-focused text."
+        },
+        "ivWriter.focus.fadePower": {
+          "type": "number",
+          "default": 2.0,
+          "minimum": 1.0,
+          "maximum": 4.0,
+          "description": "Easing curve power exponent for fading."
+        },
+        "ivWriter.typography.fontFamily": {
+          "type": "string",
+          "default": "system-ui, -apple-system, BlinkMacSystemFont, 'Pretendard', sans-serif",
+          "description": "Font family for the writing editor."
+        },
+        "ivWriter.typography.fontSize": {
+          "type": "number",
+          "default": 19,
+          "minimum": 12,
+          "maximum": 36,
+          "description": "Font size in pixels."
+        },
+        "ivWriter.typography.lineHeight": {
+          "type": "number",
+          "default": 1.85,
+          "minimum": 1.2,
+          "maximum": 3.0,
+          "description": "Line height multiplier."
+        },
+        "ivWriter.typography.maxWidth": {
+          "type": "number",
+          "default": 720,
+          "minimum": 400,
+          "maximum": 1400,
+          "description": "Maximum width of the writing column in pixels."
+        },
+        "ivWriter.theme.preset": {
+          "type": "string",
+          "enum": ["paper", "dark", "sepia", "midnight"],
+          "default": "paper",
+          "description": "Writing theme preset."
+        },
+        "ivWriter.cursor.style": {
+          "type": "string",
+          "enum": ["bar", "block", "underline"],
+          "default": "bar",
+          "description": "Caret/cursor visual style."
+        },
+        "ivWriter.cursor.width": {
+          "type": "number",
+          "default": 2,
+          "minimum": 1,
+          "maximum": 6,
+          "description": "Caret/cursor width in pixels."
+        },
+        "ivWriter.cursor.animation": {
+          "type": "string",
+          "enum": ["fade", "pulse", "blink", "solid"],
+          "default": "fade",
+          "description": "Caret/cursor animation style."
+        },
+        "ivWriter.focusLine.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Display subtle visual highlight on the current focus block."
+        },
+        "ivWriter.focusLine.style": {
+          "type": "string",
+          "enum": ["background", "left-border", "underline", "none"],
+          "default": "background",
+          "description": "Visual style of focus line indicator."
+        },
+        "ivWriter.editor.autoSaveDebounce": {
+          "type": "number",
+          "default": 500,
+          "minimum": 100,
+          "maximum": 3000,
+          "description": "Debounce time in milliseconds before auto-saving document changes."
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
@@ -31,6 +220,7 @@
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "check-types": "tsc --noEmit",
     "lint": "eslint src",
+    "test:unit": "bun test src/test/focusEngine.test.ts",
     "test": "vscode-test"
   },
   "devDependencies": {
@@ -48,5 +238,14 @@
   "overrides": {
     "diff": "^8.0.4",
     "serialize-javascript": "^7.0.6"
+  },
+  "dependencies": {
+    "@codemirror/commands": "^6.11.0",
+    "@codemirror/lang-markdown": "^6.5.2",
+    "@codemirror/language": "^6.12.4",
+    "@codemirror/search": "^6.7.1",
+    "@codemirror/state": "^6.7.1",
+    "@codemirror/view": "^6.43.9",
+    "@lezer/highlight": "^1.2.3"
   }
 }
