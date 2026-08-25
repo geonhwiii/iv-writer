@@ -5,8 +5,9 @@ export interface TextRange {
 
 export class FocusEngine {
   /**
-   * 마침표(., !, ?), 물음표, 느낌표, 개행문자(\n)를 기준으로
-   * 정밀한 문장(Sentence) 단위 범위들을 추출합니다.
+   * 마침표(.), 물음표(?), 느낌표(!), 말줄임표(…), 전각 마침표(。), 개행(\n)을 기준으로
+   * 문장(Sentence) 단위 범위들을 정밀하게 분할 추출합니다.
+   * 사진 4의 "이렇게 . 문장단위로도 . 자를수있어요" 와 같은 케이스도 완벽 분할.
    */
   public static extractSentenceRanges(text: string): TextRange[] {
     const ranges: TextRange[] = [];
@@ -20,7 +21,7 @@ export class FocusEngine {
     for (let i = 0; i < len; i++) {
       const char = text[i];
 
-      // 개행 문자는 문장 경계
+      // 개행 문자는 즉시 문장 경계
       if (char === '\n') {
         if (i > start) {
           ranges.push({ from: start, to: i });
@@ -39,39 +40,31 @@ export class FocusEngine {
         char === '！' ||
         char === '？'
       ) {
-        const nextChar = i + 1 < len ? text[i + 1] : '';
-        const isEnd =
-          i + 1 >= len ||
-          nextChar === ' ' ||
-          nextChar === '\t' ||
-          nextChar === '\n' ||
-          nextChar === '"' ||
-          nextChar === "'" ||
-          nextChar === ')' ||
-          nextChar === '」' ||
-          nextChar === '”' ||
-          nextChar === '’';
-
-        if (isEnd) {
-          let end = i + 1;
-          while (
-            end < len &&
-            (text[end] === '"' ||
-              text[end] === "'" ||
-              text[end] === ')' ||
-              text[end] === '」' ||
-              text[end] === '”' ||
-              text[end] === '’')
-          ) {
-            end++;
-          }
-          ranges.push({ from: start, to: end });
-          while (end < len && (text[end] === ' ' || text[end] === '\t')) {
-            end++;
-          }
-          start = end;
-          i = end - 1;
+        let end = i + 1;
+        // 닫는 따옴표나 괄호가 붙어있으면 포함
+        while (
+          end < len &&
+          (text[end] === '"' ||
+            text[end] === "'" ||
+            text[end] === ')' ||
+            text[end] === '」' ||
+            text[end] === '”' ||
+            text[end] === '’' ||
+            text[end] === ']')
+        ) {
+          end++;
         }
+
+        if (end > start) {
+          ranges.push({ from: start, to: end });
+        }
+
+        // 공백 건너뛰기
+        while (end < len && (text[end] === ' ' || text[end] === '\t')) {
+          end++;
+        }
+        start = end;
+        i = end - 1;
       }
     }
 
@@ -164,7 +157,7 @@ export class FocusEngine {
       return ranges[ranges.length - 1];
     }
 
-    // 커서가 문단 사이의 빈 줄에 있는 경우 가장 가까운 앞/뒤 범위 매핑
+    // 커서가 문단 사이의 빈 줄에 있는 경우
     for (let i = 0; i < ranges.length; i++) {
       if (cursorPos < ranges[i].from) {
         return i > 0 ? ranges[i - 1] : ranges[0];
@@ -180,12 +173,10 @@ export class FocusEngine {
   public static calculateDimmedRanges(totalLength: number, activeRange: TextRange): TextRange[] {
     const dimmed: TextRange[] = [];
 
-    // 1. 활성 범위 이전 영역
     if (activeRange.from > 0) {
       dimmed.push({ from: 0, to: activeRange.from });
     }
 
-    // 2. 활성 범위 이후 영역
     if (activeRange.to < totalLength) {
       dimmed.push({ from: activeRange.to, to: totalLength });
     }

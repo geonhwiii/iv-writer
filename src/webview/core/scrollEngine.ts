@@ -6,13 +6,13 @@ export class ScrollEngine {
   private targetScrollTop: number = 0;
   private animationStartTime: number = 0;
   private startScrollTop: number = 0;
-  private duration: number = 160; // ms for snappy, responsive typewriter feel
+  private duration: number = 140; // ms for ultra-smooth responsive typewriter scrolling
   private isUserScrolling: boolean = false;
   private userScrollTimeout: any = null;
 
   constructor(
     private readonly view: EditorView,
-    private anchorRatio: number = 0.45,
+    private anchorRatio: number = 0.50, // Screen vertical 50% center
     private enabled: boolean = true
   ) {
     this.currentScrollTop = this.view.scrollDOM.scrollTop;
@@ -20,7 +20,7 @@ export class ScrollEngine {
   }
 
   public setAnchor(ratio: number): void {
-    this.anchorRatio = Math.max(0.1, Math.min(0.9, ratio));
+    this.anchorRatio = Math.max(0.2, Math.min(0.8, ratio));
   }
 
   public setEnabled(enabled: boolean): void {
@@ -47,12 +47,13 @@ export class ScrollEngine {
       }
       this.userScrollTimeout = setTimeout(() => {
         this.isUserScrolling = false;
-      }, 600);
+      }, 700);
     }, { passive: true });
   }
 
   /**
-   * 커서 위치를 뷰포트의 앵커(기본 45%) 위치로 정렬하는 스크롤 계산 및 실행
+   * 커서 위치를 뷰포트의 정중앙(50%) 위치로 정렬하는 스크롤 계산 및 실행.
+   * 엔터를 치면 새 줄이 정중앙에 오고 이전 줄들이 위로 스르륵 밀려 올라갑니다.
    */
   public scrollToCursor(immediate: boolean = false): void {
     if (!this.enabled || this.isUserScrolling) {
@@ -78,8 +79,8 @@ export class ScrollEngine {
     const cursorRelativeY = coords.top - scrollRect.top;
     const offset = cursorRelativeY - anchorY;
 
-    // 미세한 2px 이내 차이는 스크롤 스킵 (떨림 방지)
-    if (Math.abs(offset) < 3 && !immediate) {
+    // 미세한 2px 이내 차이는 떨림 방지
+    if (Math.abs(offset) < 2 && !immediate) {
       return;
     }
 
@@ -112,8 +113,8 @@ export class ScrollEngine {
       const elapsed = currentTime - this.animationStartTime;
       const progress = Math.min(1.0, elapsed / this.duration);
       
-      // easeOutCubic Easing
-      const ease = 1 - Math.pow(1 - progress, 3);
+      // easeOutQuad Easing
+      const ease = 1 - (1 - progress) * (1 - progress);
       const nextScrollTop = this.startScrollTop + (this.targetScrollTop - this.startScrollTop) * ease;
 
       scrollDOM.scrollTop = nextScrollTop;

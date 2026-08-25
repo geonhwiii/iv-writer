@@ -60,8 +60,9 @@ function initApp(): void {
   hud = new HUDOverlay({
     onToggleFocus: () => cycleFocusMode(),
     onCycleTheme: () => cycleTheme(),
-    onAdjustFontSize: (delta) => adjustFontSize(delta),
+    onOpenSearch: () => editor?.openSearch(),
     onOpenSettings: () => vscode.postMessage({ type: 'SHOW_MENU' }),
+    onInsertFormat: (fmt) => editor?.insertFormat(fmt),
   });
 
   applyThemeAndStyles(currentSettings);
@@ -85,14 +86,12 @@ function initApp(): void {
           currentSettings,
           {
             onDocChange: (newContent) => {
-              hud?.hideImmediately();
               vscode.postMessage({
                 type: 'TEXT_EDIT',
                 payload: { content: newContent },
               });
             },
             onCursorChange: (line, column, selectionLength) => {
-              hud?.hideImmediately();
               vscode.postMessage({
                 type: 'CURSOR_ACTIVITY',
                 payload: { line, column, selectionLength },

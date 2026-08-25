@@ -13,7 +13,7 @@
 .cm-content {
   max-width: var(--iv-max-width, 680px);
   margin: 0 auto;
-  padding: 120px 32px 55vh 32px; /* Generous breathing room: first line never cut off, typewriter centered */
+  padding: 45vh 32px 55vh 32px; /* Center-aligned typewriter scrolling: active line locked at 50% */
   caret-color: var(--iv-cursor-color);
   word-break: break-word;
 }
@@ -76,12 +76,12 @@
 /* Search Panel Theming */
 .cm-panel.cm-search {
   position: absolute;
-  top: 18px;
-  left: 24px;
-  background-color: var(--iv-hud-bg);
+  top: 48px;
+  right: 24px;
+  background-color: var(--iv-bar-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--iv-hud-border);
+  border: 1px solid var(--iv-bar-border);
   border-radius: 6px;
   padding: 6px 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
@@ -96,8 +96,8 @@
 }
 
 .cm-search input[type="text"] {
-  background-color: var(--iv-hud-btn-bg);
-  border: 1px solid var(--iv-hud-border);
+  background-color: rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--iv-bar-border);
   color: var(--iv-fg);
   padding: 3px 8px;
   border-radius: 4px;
@@ -111,8 +111,8 @@
 }
 
 .cm-search button {
-  background: var(--iv-hud-btn-bg);
-  border: 1px solid var(--iv-hud-border);
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--iv-bar-border);
   color: var(--iv-fg);
   padding: 3px 8px;
   border-radius: 4px;
@@ -122,7 +122,7 @@
 }
 
 .cm-search button:hover {
-  background: var(--iv-hud-btn-hover);
+  background: rgba(0, 0, 0, 0.08);
 }
 
 .cm-searchMatch {

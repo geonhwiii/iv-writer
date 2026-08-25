@@ -271,6 +271,107 @@ export class IVEditor {
     this.updateSettings(this.currentSettings);
   }
 
+  public openSearch(): void {
+    openSearchPanel(this.view);
+  }
+
+  public insertFormat(formatType: string): void {
+    const selection = this.view.state.selection.main;
+    const selectedText = this.view.state.sliceDoc(selection.from, selection.to);
+
+    switch (formatType) {
+      case 'bold': {
+        const text = selectedText || '볼드체';
+        this.view.dispatch({
+          changes: { from: selection.from, to: selection.to, insert: `**${text}**` },
+          selection: { anchor: selection.from + 2, head: selection.from + 2 + text.length },
+        });
+        break;
+      }
+      case 'italic': {
+        const text = selectedText || '이탤릭체';
+        this.view.dispatch({
+          changes: { from: selection.from, to: selection.to, insert: `*${text}*` },
+          selection: { anchor: selection.from + 1, head: selection.from + 1 + text.length },
+        });
+        break;
+      }
+      case 'strike': {
+        const text = selectedText || '취소선';
+        this.view.dispatch({
+          changes: { from: selection.from, to: selection.to, insert: `~~${text}~~` },
+          selection: { anchor: selection.from + 2, head: selection.from + 2 + text.length },
+        });
+        break;
+      }
+      case 'h1': {
+        const line = this.view.state.doc.lineAt(selection.head);
+        this.view.dispatch({
+          changes: { from: line.from, to: line.from, insert: '# ' },
+        });
+        break;
+      }
+      case 'list': {
+        const line = this.view.state.doc.lineAt(selection.head);
+        this.view.dispatch({
+          changes: { from: line.from, to: line.from, insert: '- ' },
+        });
+        break;
+      }
+      case 'quote': {
+        const line = this.view.state.doc.lineAt(selection.head);
+        this.view.dispatch({
+          changes: { from: line.from, to: line.from, insert: '> ' },
+        });
+        break;
+      }
+      case 'link': {
+        const text = selectedText || '링크 텍스트';
+        this.view.dispatch({
+          changes: { from: selection.from, to: selection.to, insert: `[${text}](https://)` },
+        });
+        break;
+      }
+      case 'wikilink': {
+        const text = selectedText || '문서명';
+        this.view.dispatch({
+          changes: { from: selection.from, to: selection.to, insert: `[[${text}]]` },
+        });
+        break;
+      }
+      case 'footnote': {
+        this.view.dispatch({
+          changes: { from: selection.to, insert: `[^1]\n\n[^1]: 각주 내용` },
+        });
+        break;
+      }
+      case 'table': {
+        const tableTemplate = `\n| 제목 1 | 제목 2 |\n| --- | --- |\n| 내용 1 | 내용 2 |\n`;
+        this.view.dispatch({
+          changes: { from: selection.to, insert: tableTemplate },
+        });
+        break;
+      }
+      case 'toc': {
+        this.view.dispatch({
+          changes: { from: selection.to, insert: `[TOC]\n` },
+        });
+        break;
+      }
+      case 'p': {
+        // Plain text: remove markdown prefixes
+        const line = this.view.state.doc.lineAt(selection.head);
+        const lineText = line.text;
+        const cleaned = lineText.replace(/^([#>\-\*\+\d\.]+\s+)/, '');
+        this.view.dispatch({
+          changes: { from: line.from, to: line.to, insert: cleaned },
+        });
+        break;
+      }
+    }
+    this.view.focus();
+  }
+
   public focus(): void {
     this.view.focus();
   }

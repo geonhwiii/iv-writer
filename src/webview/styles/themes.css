@@ -1,77 +1,78 @@
 /* Authentic iA Writer Color Palettes */
 
-/* Light Theme (Classic iA Writer Editor) */
+/* Paper / Light Theme (Exact match: bg rgb(247,247,247), dim rgb(198,196,194), caret #007AFF) */
 body[data-theme="paper"], body[data-theme="light"] {
-  --iv-bg: #F6F6F6;
+  --iv-bg: rgb(247, 247, 247);
   --iv-fg: #111111;
-  --iv-fg-dimmed: #B2B2B2;
-  --iv-dimmed-opacity: 0.22;
-  --iv-cursor-color: #007AFF; /* Iconic Electric Blue */
-  --iv-focus-indicator: rgba(0, 122, 255, 0.04);
-  --iv-focus-line: rgba(0, 122, 255, 0.4);
+  --iv-fg-dimmed: rgb(198, 196, 194);
+  --iv-dimmed-opacity: 1.0;
+  --iv-cursor-color: #007AFF; /* Iconic Electric Sky Blue */
   --iv-selection-bg: #B4D5FE;
-  --iv-syntax-muted: rgba(0, 0, 0, 0.22);
+  --iv-syntax-muted: rgb(198, 196, 194);
   --iv-code-bg: rgba(0, 0, 0, 0.05);
-  --iv-hud-bg: #FFFFFF;
-  --iv-hud-border: rgba(0, 0, 0, 0.08);
-  --iv-hud-fg: #555555;
-  --iv-hud-btn-bg: rgba(0, 0, 0, 0.04);
-  --iv-hud-btn-hover: rgba(0, 0, 0, 0.08);
+
+  /* Top Header & Bottom Format Bar */
+  --iv-bar-bg: rgba(247, 247, 247, 0.96);
+  --iv-bar-border: rgba(0, 0, 0, 0.08);
+  --iv-bar-fg: #444444;
+  --iv-bar-muted: #888888;
+  --iv-bar-active: #007AFF;
+  --iv-bar-hover: rgba(0, 0, 0, 0.05);
 }
 
 /* Dark Theme (iA Writer Night Mode) */
 body[data-theme="dark"] {
   --iv-bg: #181818;
-  --iv-fg: #E6E6E6;
+  --iv-fg: #EDEDED;
   --iv-fg-dimmed: #555555;
-  --iv-dimmed-opacity: 0.20;
-  --iv-cursor-color: #0091FF; /* Bright Neon Blue */
-  --iv-focus-indicator: rgba(255, 255, 255, 0.03);
-  --iv-focus-line: rgba(0, 145, 255, 0.4);
+  --iv-dimmed-opacity: 1.0;
+  --iv-cursor-color: #0091FF; /* Bright Neon Cyan */
   --iv-selection-bg: rgba(0, 122, 255, 0.35);
-  --iv-syntax-muted: rgba(255, 255, 255, 0.20);
+  --iv-syntax-muted: #555555;
   --iv-code-bg: rgba(255, 255, 255, 0.06);
-  --iv-hud-bg: #242424;
-  --iv-hud-border: rgba(255, 255, 255, 0.1);
-  --iv-hud-fg: #A0A0A0;
-  --iv-hud-btn-bg: rgba(255, 255, 255, 0.06);
-  --iv-hud-btn-hover: rgba(255, 255, 255, 0.12);
+
+  --iv-bar-bg: rgba(24, 24, 24, 0.96);
+  --iv-bar-border: rgba(255, 255, 255, 0.08);
+  --iv-bar-fg: #CCCCCC;
+  --iv-bar-muted: #777777;
+  --iv-bar-active: #0091FF;
+  --iv-bar-hover: rgba(255, 255, 255, 0.06);
 }
 
-/* Sepia Theme (Vintage Manuscript) */
+/* Sepia Theme (Vintage Paper) */
 body[data-theme="sepia"] {
   --iv-bg: #F5EEDC;
   --iv-fg: #3E342B;
   --iv-fg-dimmed: #A89F93;
-  --iv-dimmed-opacity: 0.24;
+  --iv-dimmed-opacity: 1.0;
   --iv-cursor-color: #D9534F; /* Vintage Crimson */
-  --iv-focus-indicator: rgba(217, 83, 79, 0.04);
-  --iv-focus-line: rgba(217, 83, 79, 0.4);
   --iv-selection-bg: rgba(217, 83, 79, 0.22);
-  --iv-syntax-muted: rgba(62, 52, 43, 0.22);
+  --iv-syntax-muted: #A89F93;
   --iv-code-bg: rgba(62, 52, 43, 0.06);
-  --iv-hud-bg: #EFE6D2;
-  --iv-hud-border: rgba(62, 52, 43, 0.1);
-  --iv-hud-fg: #786C5E;
-  --iv-hud-btn-bg: rgba(62, 52, 43, 0.05);
-  --iv-hud-btn-hover: rgba(62, 52, 43, 0.1);
+
+  --iv-bar-bg: rgba(245, 238, 220, 0.96);
+  --iv-bar-border: rgba(62, 52, 43, 0.1);
+  --iv-bar-fg: #5C4F43;
+  --iv-bar-muted: #9E9184;
+  --iv-bar-active: #D9534F;
+  --iv-bar-hover: rgba(62, 52, 43, 0.06);
 }
 
-/* Midnight Theme (Deep Slate Indigo) */
+/* Midnight Theme (Deep Slate) */
 body[data-theme="midnight"] {
   --iv-bg: #0D1117;
   --iv-fg: #E6EDF3;
   --iv-fg-dimmed: #484F58;
-  --iv-dimmed-opacity: 0.20;
+  --iv-dimmed-opacity: 1.0;
   --iv-cursor-color: #58A6FF;
-  --iv-focus-indicator: rgba(88, 166, 255, 0.03);
-  --iv-focus-line: rgba(88, 166, 255, 0.4);
   --iv-selection-bg: rgba(88, 166, 255, 0.25);
-  --iv-syntax-muted: rgba(230, 237, 243, 0.20);
+  --iv-syntax-muted: #484F58;
   --iv-code-bg: rgba(255, 255, 255, 0.05);
-  --iv-hud-bg: #161B22;
-  --iv-hud-border: rgba(255, 255, 255, 0.1);
-  --iv-hud-fg: #8B949E;
-  --iv-hud-btn-bg: rgba(255, 255, 255, 0.06);
-  --iv-hud-btn-hover: rgba(255, 255, 255, 0.12);
+
+  --iv-bar-bg: rgba(13, 17, 23, 0.96);
+  --iv-bar-border: rgba(255, 255, 255, 0.1);
+  --iv-bar-fg: #8B949E;
+  --iv-bar-muted: #586069;
+  --iv-bar-active: #58A6FF;
+  --iv-bar-hover: rgba(255, 255, 255, 0.06);
 }

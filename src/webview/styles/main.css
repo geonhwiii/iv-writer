@@ -20,7 +20,7 @@ html, body {
   user-select: text;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .iv-container {
@@ -31,10 +31,139 @@ html, body {
   flex-direction: column;
 }
 
+/* ==========================================================================
+   Top Navigation Header (Screenshot 1 Exact Match)
+   ========================================================================== */
+.iv-top-nav {
+  height: 42px;
+  min-height: 42px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--iv-bar-bg);
+  border-bottom: 1px solid var(--iv-bar-border);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 12px;
+  color: var(--iv-bar-fg);
+  user-select: none;
+  z-index: 100;
+}
+
+.iv-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.iv-window-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot-red { background-color: #FF5F56; }
+.dot-yellow { background-color: #FFBD2E; }
+.dot-green { background-color: #27C93F; }
+
+.iv-nav-arrows {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--iv-bar-hover);
+  border-radius: 4px;
+  padding: 1px;
+}
+
+.iv-nav-arrow {
+  background: transparent;
+  border: none;
+  color: var(--iv-bar-muted);
+  font-size: 14px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.iv-nav-arrow:hover {
+  color: var(--iv-bar-fg);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.iv-nav-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.iv-doc-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--iv-bar-fg);
+  letter-spacing: -0.01em;
+}
+
+.iv-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.iv-nav-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--iv-bar-fg);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.iv-nav-btn:hover {
+  background: var(--iv-bar-hover);
+  border-color: var(--iv-bar-border);
+}
+
+.iv-nav-btn.iv-focus-pill {
+  background: var(--iv-bar-hover);
+  border-color: var(--iv-bar-border);
+}
+
+.iv-nav-btn.iv-focus-pill.active {
+  color: var(--iv-bar-active);
+  border-color: rgba(0, 122, 255, 0.3);
+  background: rgba(0, 122, 255, 0.06);
+}
+
+.iv-dropdown-arrow {
+  font-size: 10px;
+  opacity: 0.6;
+}
+
+/* ==========================================================================
+   Editor Container
+   ========================================================================== */
 .iv-editor-container {
   flex: 1;
   width: 100%;
-  height: 100%;
+  height: calc(100% - 78px);
   overflow: hidden;
 }
 
@@ -46,7 +175,7 @@ html, body {
 .cm-scroller {
   overflow-x: hidden !important;
   overflow-y: auto !important;
-  scrollbar-width: none; /* Hide scrollbar for pure immersion */
+  scrollbar-width: none;
 }
 
 .cm-scroller::-webkit-scrollbar {
@@ -57,111 +186,77 @@ html, body {
   outline: none !important;
 }
 
-/* Top-Right Floating Controls (Auto-hide Toolbar) */
-.iv-top-controls {
-  position: absolute;
-  top: 18px;
-  right: 24px;
+/* ==========================================================================
+   Bottom Format Bar (Screenshot 1 Exact Match)
+   ========================================================================== */
+.iv-format-bar {
+  height: 36px;
+  min-height: 36px;
+  padding: 0 16px;
   display: flex;
   align-items: center;
-  gap: 6px;
-  z-index: 1000;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.iv-top-controls.visible,
-.iv-top-controls:hover {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.iv-ctrl-btn {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  height: 28px;
-  padding: 0 10px;
-  background-color: var(--iv-hud-bg);
-  border: 1px solid var(--iv-hud-border);
-  border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  justify-content: space-between;
+  background-color: var(--iv-bar-bg);
+  border-top: 1px solid var(--iv-bar-border);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--iv-hud-fg);
-  cursor: pointer;
-  white-space: nowrap;
+  font-size: 12px;
+  color: var(--iv-bar-muted);
   user-select: none;
-  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+  z-index: 100;
+  overflow-x: auto;
 }
 
-.iv-ctrl-btn:hover {
-  background-color: var(--iv-hud-btn-hover);
-  color: var(--iv-fg);
+.iv-format-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.iv-ctrl-btn:active {
-  transform: scale(0.96);
+.iv-fmt-item {
+  background: transparent;
+  border: none;
+  color: var(--iv-bar-muted);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 3px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  transition: all 0.12s ease;
 }
 
-.iv-ctrl-btn.active {
-  color: var(--iv-cursor-color);
-  border-color: var(--iv-cursor-color);
+.iv-fmt-item:hover {
+  color: var(--iv-bar-fg);
+  background: var(--iv-bar-hover);
 }
 
-.iv-ctrl-btn.iv-btn-compact {
-  padding: 0 7px;
+.iv-fmt-item.active {
+  color: var(--iv-bar-active);
   font-weight: 600;
 }
 
-.iv-btn-icon {
-  font-size: 11px;
+.iv-fmt-bold {
+  font-weight: 700;
+  color: var(--iv-bar-fg);
 }
 
-/* iA Writer Bottom Floating Stats Pill Bar (Exact Match from Screenshot) */
-.iv-hud {
-  position: absolute;
-  bottom: 22px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1000;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.iv-hud.visible,
-.iv-hud:hover {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.iv-stat-pill {
+.iv-format-right {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 6px 16px;
-  background-color: var(--iv-hud-bg);
-  border: 1px solid var(--iv-hud-border);
-  border-radius: 6px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.iv-fmt-stats {
+  background: transparent;
+  border: none;
+  color: var(--iv-bar-muted);
   font-size: 12px;
-  font-weight: 500;
-  color: var(--iv-hud-fg);
-  white-space: nowrap;
-  user-select: none;
   cursor: pointer;
-  transition: all 0.15s ease;
+  padding: 3px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  transition: all 0.12s ease;
 }
 
-.iv-stat-pill:hover {
-  color: var(--iv-fg);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-}
-
-.iv-stat-pill span {
-  letter-spacing: 0.01em;
+.iv-fmt-stats:hover {
+  color: var(--iv-bar-fg);
+  background: var(--iv-bar-hover);
 }
