@@ -35,13 +35,13 @@
 
 ## ⌨️ 단축키
 
-| 단축키 (macOS) | 단축키 (Windows) | 동작 |
-| :--- | :--- | :--- |
-| `Cmd + Shift + W` | `Ctrl + Shift + W` | iV Writer 에디터로 열기 |
-| `Cmd + Shift + V` | `Ctrl + Shift + V` | 마크다운 미리보기 모드 토글 |
-| `Cmd + /` | `Ctrl + /` | 포커스 모드 토글 (문장 ➡️ 문단 ➡️ 끄기) |
-| `Cmd + Shift + D` | `Ctrl + Shift + D` | 오늘의 데일리 노트 생성/열기 |
-| `Cmd + F` | `Ctrl + F` | 테마 일체형 검색 패널 열기 |
+| 단축키 (macOS)    | 단축키 (Windows)   | 동작                                    |
+| :---------------- | :----------------- | :-------------------------------------- |
+| `Cmd + Shift + W` | `Ctrl + Shift + W` | iV Writer 에디터로 열기                 |
+| `Cmd + Shift + V` | `Ctrl + Shift + V` | 마크다운 미리보기 모드 토글             |
+| `Cmd + /`         | `Ctrl + /`         | 포커스 모드 토글 (문장 ➡️ 문단 ➡️ 끄기) |
+| `Cmd + Shift + D` | `Ctrl + Shift + D` | 오늘의 데일리 노트 생성/열기            |
+| `Cmd + F`         | `Ctrl + F`         | 테마 일체형 검색 패널 열기              |
 
 ---
 
