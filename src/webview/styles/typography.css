@@ -1,9 +1,9 @@
 /* Typography & Editor Content Styles */
 
 .cm-editor {
-  font-family: var(--iv-font-family, "iA Writer Duo", "iA Writer Mono", "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif);
+  font-family: var(--iv-font-family, "iA Writer Duo", "iA Writer Mono", "SF Mono", Menlo, Monaco, "Pretendard", monospace);
   font-size: var(--iv-font-size, 19px);
-  line-height: var(--iv-line-height, 1.75);
+  line-height: var(--iv-line-height, 1.8);
   letter-spacing: var(--iv-letter-spacing, -0.01em);
   color: var(--iv-fg);
   background-color: var(--iv-bg);
@@ -13,7 +13,7 @@
 .cm-content {
   max-width: var(--iv-max-width, 680px);
   margin: 0 auto;
-  padding: 100px 32px 60vh 32px; /* Sufficient top margin so first line is never cut off */
+  padding: 120px 32px 55vh 32px; /* Generous breathing room: first line never cut off, typewriter centered */
   caret-color: var(--iv-cursor-color);
   word-break: break-word;
 }
@@ -24,7 +24,7 @@
 
 /* Markdown Subtle Formatting (iA Writer WYSIWYM) */
 .cm-header-1 {
-  font-size: 1.45em;
+  font-size: 1.4em;
   font-weight: 700;
   line-height: 1.35;
   margin-top: 1.4em;
@@ -33,7 +33,7 @@
 }
 
 .cm-header-2 {
-  font-size: 1.25em;
+  font-size: 1.2em;
   font-weight: 600;
   line-height: 1.35;
   margin-top: 1.2em;
@@ -51,7 +51,7 @@
 }
 
 .cm-strong {
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .cm-emphasis {
@@ -60,10 +60,10 @@
 
 /* Inline Code & Monospace */
 .cm-inline-code, .cm-monospace {
-  font-family: "iA Writer Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-family: "iA Writer Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.9em;
   padding: 2px 6px;
-  border-radius: 3px;
+  border-radius: 4px;
   background-color: var(--iv-code-bg);
   color: var(--iv-fg);
 }
@@ -76,17 +76,17 @@
 /* Search Panel Theming */
 .cm-panel.cm-search {
   position: absolute;
-  top: 20px;
-  right: 28px;
+  top: 18px;
+  left: 24px;
   background-color: var(--iv-hud-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--iv-hud-border);
-  border-radius: 8px;
-  padding: 8px 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+  padding: 6px 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   font-family: inherit;
-  font-size: 13px;
+  font-size: 12px;
   color: var(--iv-fg);
   z-index: 900;
   display: flex;
@@ -99,11 +99,11 @@
   background-color: var(--iv-hud-btn-bg);
   border: 1px solid var(--iv-hud-border);
   color: var(--iv-fg);
-  padding: 4px 8px;
+  padding: 3px 8px;
   border-radius: 4px;
   outline: none;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .cm-search input[type="text"]:focus {
@@ -117,7 +117,7 @@
   padding: 3px 8px;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 11px;
   transition: background 0.15s ease;
 }
 

@@ -1,31 +1,30 @@
 /* Focus & Fading Styles (Authentic iA Writer Dimming) */
 
-/* Non-focused text is dimmed to 0.25 opacity */
+/* Non-focused text is styled in subtle light gray like iA Writer */
 .iv-dimmed {
-  opacity: var(--iv-dimmed-opacity, 0.25) !important;
-  color: var(--iv-fg-faded) !important;
-  transition: opacity 0.16s cubic-bezier(0.16, 1, 0.3, 1), color 0.16s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity;
+  color: var(--iv-fg-dimmed, #B2B2B2) !important;
+  opacity: var(--iv-dimmed-opacity, 0.22) !important;
+  transition: opacity 0.15s cubic-bezier(0.16, 1, 0.3, 1), color 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, color;
 }
 
-/* Active/Focused text is 100% full opacity */
+/* Active/Focused text is 100% full crisp opacity */
 .iv-line-focused {
+  color: var(--iv-fg) !important;
   opacity: 1.0 !important;
 }
 
-/* Background indicator */
+/* Subtle Focus Line Indicators (Optional) */
 body[data-focusline-style="background"] .iv-line-focused {
   background-color: var(--iv-focus-indicator);
   border-radius: 4px;
 }
 
-/* Left-border indicator */
 body[data-focusline-style="left-border"] .iv-line-focused {
   border-left: 2px solid var(--iv-focus-line);
   padding-left: 8px;
 }
 
-/* Underline indicator */
 body[data-focusline-style="underline"] .iv-line-focused {
   border-bottom: 1px solid var(--iv-focus-line);
 }

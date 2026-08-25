@@ -260,10 +260,10 @@ export class IVEditor {
   public cycleFocusMode(): void {
     if (!this.currentSettings.focus.enabled) {
       this.currentSettings.focus.enabled = true;
-      this.currentSettings.focus.mode = 'sentence';
-    } else if (this.currentSettings.focus.mode === 'sentence') {
       this.currentSettings.focus.mode = 'paragraph';
     } else if (this.currentSettings.focus.mode === 'paragraph') {
+      this.currentSettings.focus.mode = 'sentence';
+    } else if (this.currentSettings.focus.mode === 'sentence') {
       this.currentSettings.focus.mode = 'line';
     } else {
       this.currentSettings.focus.enabled = false;

@@ -1,5 +1,3 @@
-import { FocusMode } from '../../shared/settings';
-
 export interface TextRange {
   from: number;
   to: number;
@@ -7,8 +5,8 @@ export interface TextRange {
 
 export class FocusEngine {
   /**
-   * 텍스트에서 마침표(., !, ?), 개행문자(\n), 한국어 마침부호를 기준으로
-   * 정밀한 문장(Sentence) 단위 범위들을 추출합니다. (iA Writer 시그니처)
+   * 마침표(., !, ?), 물음표, 느낌표, 개행문자(\n)를 기준으로
+   * 정밀한 문장(Sentence) 단위 범위들을 추출합니다.
    */
   public static extractSentenceRanges(text: string): TextRange[] {
     const ranges: TextRange[] = [];
@@ -22,7 +20,7 @@ export class FocusEngine {
     for (let i = 0; i < len; i++) {
       const char = text[i];
 
-      // 개행 문자는 무조건 문장 경계
+      // 개행 문자는 문장 경계
       if (char === '\n') {
         if (i > start) {
           ranges.push({ from: start, to: i });
@@ -31,9 +29,16 @@ export class FocusEngine {
         continue;
       }
 
-      // 마침표, 물음표, 느낌표 판별
-      if (char === '.' || char === '!' || char === '?' || char === '…') {
-        // 다음 글자가 공백, 개행, 따옴표이거나 문자열 끝인 경우 문장 종결로 처리
+      // 문장 종결 부호: ., !, ?, …, 。, ！, ？
+      if (
+        char === '.' ||
+        char === '!' ||
+        char === '?' ||
+        char === '…' ||
+        char === '。' ||
+        char === '！' ||
+        char === '？'
+      ) {
         const nextChar = i + 1 < len ? text[i + 1] : '';
         const isEnd =
           i + 1 >= len ||
@@ -44,16 +49,23 @@ export class FocusEngine {
           nextChar === "'" ||
           nextChar === ')' ||
           nextChar === '」' ||
-          nextChar === '”';
+          nextChar === '”' ||
+          nextChar === '’';
 
         if (isEnd) {
-          // 따옴표나 닫는 괄호가 바로 뒤에 붙은 경우 포함
           let end = i + 1;
-          while (end < len && (text[end] === '"' || text[end] === "'" || text[end] === ')' || text[end] === '」' || text[end] === '”')) {
+          while (
+            end < len &&
+            (text[end] === '"' ||
+              text[end] === "'" ||
+              text[end] === ')' ||
+              text[end] === '」' ||
+              text[end] === '”' ||
+              text[end] === '’')
+          ) {
             end++;
           }
           ranges.push({ from: start, to: end });
-          // 다음 문장의 시작은 공백을 건너뛴 위치
           while (end < len && (text[end] === ' ' || text[end] === '\t')) {
             end++;
           }
@@ -72,6 +84,7 @@ export class FocusEngine {
 
   /**
    * 빈 줄(\n\n)을 기준으로 문단(Paragraph) 범위들을 추출합니다.
+   * 여러 줄로 이어진 텍스트는 하나의 문단으로 묶입니다.
    */
   public static extractParagraphRanges(text: string): TextRange[] {
     const ranges: TextRange[] = [];
@@ -80,8 +93,7 @@ export class FocusEngine {
     }
 
     const lines = text.split('\n');
-    let currentStart = 0;
-    let inParagraph = false;
+    let currentStart = -1;
     let charOffset = 0;
 
     for (let i = 0; i < lines.length; i++) {
@@ -89,21 +101,20 @@ export class FocusEngine {
       const isBlank = line.trim().length === 0;
 
       if (!isBlank) {
-        if (!inParagraph) {
+        if (currentStart === -1) {
           currentStart = charOffset;
-          inParagraph = true;
         }
       } else {
-        if (inParagraph) {
+        if (currentStart !== -1) {
           ranges.push({ from: currentStart, to: charOffset - 1 });
-          inParagraph = false;
+          currentStart = -1;
         }
       }
 
       charOffset += line.length + 1; // +1 for '\n'
     }
 
-    if (inParagraph) {
+    if (currentStart !== -1) {
       ranges.push({ from: currentStart, to: text.length });
     }
 
@@ -151,6 +162,13 @@ export class FocusEngine {
     // 커서가 마지막에 있는 경우
     if (cursorPos >= ranges[ranges.length - 1].to) {
       return ranges[ranges.length - 1];
+    }
+
+    // 커서가 문단 사이의 빈 줄에 있는 경우 가장 가까운 앞/뒤 범위 매핑
+    for (let i = 0; i < ranges.length; i++) {
+      if (cursorPos < ranges[i].from) {
+        return i > 0 ? ranges[i - 1] : ranges[0];
+      }
     }
 
     return ranges[0];

@@ -195,10 +195,25 @@ export class IVWriterEditorProvider implements vscode.CustomTextEditorProvider {
 </head>
 <body>
   <div id="app" class="iv-container">
+    <!-- Top-Right Floating Controls (Auto-hide) -->
+    <div id="iv-top-controls" class="iv-top-controls">
+      <button id="btn-focus-mode" class="iv-ctrl-btn" title="포커스 모드 변경 (Sentence / Paragraph / Off) [Cmd+/]">
+        <span class="iv-btn-icon">🎯</span>
+        <span id="label-focus" class="iv-btn-label">Paragraph</span>
+      </button>
+      <button id="btn-theme" class="iv-ctrl-btn" title="테마 변경 (Paper / Dark / Sepia / Midnight) [Cmd+K Cmd+T]">
+        <span class="iv-btn-icon">🌓</span>
+        <span id="label-theme" class="iv-btn-label">Paper</span>
+      </button>
+      <button id="btn-font-dec" class="iv-ctrl-btn iv-btn-compact" title="글자 크기 축소">A-</button>
+      <button id="btn-font-inc" class="iv-ctrl-btn iv-btn-compact" title="글자 크기 확대">A+</button>
+      <button id="btn-settings" class="iv-ctrl-btn iv-btn-compact" title="설정 및 단축키 메뉴">⚙️</button>
+    </div>
+
     <!-- Main Editor Mount Point -->
     <main id="editor-container" class="iv-editor-container"></main>
 
-    <!-- iA Writer Bottom Floating Stats Pill Bar (Auto-hide) -->
+    <!-- iA Writer Bottom Floating Stats Pill Bar (Exact Match) -->
     <div id="iv-hud" class="iv-hud">
       <div class="iv-stat-pill">
         <span id="stat-chars">0 Characters</span>

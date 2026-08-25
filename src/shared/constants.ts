@@ -3,17 +3,17 @@ import { IVWriterSettings } from './settings';
 export const DEFAULT_SETTINGS: IVWriterSettings = {
   focus: {
     enabled: true,
-    mode: 'sentence',
+    mode: 'paragraph',
     anchor: 0.45,
     fadeDistance: 6,
-    minimumOpacity: 0.25,
+    minimumOpacity: 0.22,
     fadePower: 2.0,
-    transitionDuration: 180,
+    transitionDuration: 150,
   },
   typography: {
-    fontFamily: '"iA Writer Duo", "iA Writer Mono", "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+    fontFamily: '"iA Writer Duo", "iA Writer Mono", "SF Mono", Menlo, Monaco, "Pretendard", monospace',
     fontSize: 19,
-    lineHeight: 1.75,
+    lineHeight: 1.8,
     letterSpacing: -0.01,
     paragraphSpacing: 1.6,
     maxWidth: 680,

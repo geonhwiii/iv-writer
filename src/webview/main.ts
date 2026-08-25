@@ -40,9 +40,15 @@ function cycleTheme(): void {
   hud?.updateControls(currentSettings);
 }
 
-function toggleFocusMode(): void {
-  editor?.toggleFocusMode();
+function cycleFocusMode(): void {
+  editor?.cycleFocusMode();
   hud?.updateControls(currentSettings);
+}
+
+function adjustFontSize(delta: number): void {
+  const newSize = Math.max(12, Math.min(36, currentSettings.typography.fontSize + delta));
+  currentSettings.typography.fontSize = newSize;
+  applyThemeAndStyles(currentSettings);
 }
 
 function initApp(): void {
@@ -51,11 +57,12 @@ function initApp(): void {
     return;
   }
 
-  hud = new HUDOverlay(
-    () => toggleFocusMode(),
-    () => cycleTheme(),
-    () => vscode.postMessage({ type: 'SHOW_MENU' })
-  );
+  hud = new HUDOverlay({
+    onToggleFocus: () => cycleFocusMode(),
+    onCycleTheme: () => cycleTheme(),
+    onAdjustFontSize: (delta) => adjustFontSize(delta),
+    onOpenSettings: () => vscode.postMessage({ type: 'SHOW_MENU' }),
+  });
 
   applyThemeAndStyles(currentSettings);
 
@@ -129,11 +136,8 @@ function initApp(): void {
 
       case 'EXEC_COMMAND': {
         const { command } = message.payload;
-        if (command === 'toggleFocus') {
-          toggleFocusMode();
-        } else if (command === 'cycleFocus') {
-          editor?.cycleFocusMode();
-          hud?.updateControls(currentSettings);
+        if (command === 'toggleFocus' || command === 'cycleFocus') {
+          cycleFocusMode();
         } else if (command === 'cycleTheme') {
           cycleTheme();
         }
