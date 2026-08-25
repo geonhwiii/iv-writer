@@ -4,6 +4,7 @@
   "description": "Writer Mode on VSCode",
   "version": "0.0.2",
   "publisher": "geonhwiii",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/geonhwiii/iv-writer.git"
