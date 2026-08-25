@@ -1,5 +1,5 @@
-import { EditorState, Extension } from '@codemirror/state';
-import { EditorView, keymap, ViewPlugin, ViewUpdate, Decoration, DecorationSet } from '@codemirror/view';
+import { EditorState, Extension, StateEffect } from '@codemirror/state';
+import { drawSelection, EditorView, keymap, ViewPlugin, ViewUpdate, Decoration, DecorationSet } from '@codemirror/view';
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
 import { markdown } from '@codemirror/lang-markdown';
 import { searchKeymap, search, openSearchPanel } from '@codemirror/search';
@@ -9,9 +9,12 @@ import { IVWriterSettings } from '../../shared/settings';
 
 import { DocumentStats } from '../../shared/messages';
 
+export const updateFocusEffect = StateEffect.define<null>();
+
 export interface EditorCallbacks {
   onDocChange: (newContent: string) => void;
   onCursorChange: (line: number, col: number, selectionLen: number) => void;
+  onFormatChange?: (format: string) => void;
   onStatsChange: (stats: DocumentStats) => void;
   onOpenLink?: (link: string) => void;
 }
@@ -34,10 +37,24 @@ export class IVEditor {
     // ViewPlugin for Focus Fading Decorations
     const focusPlugin = this.createFocusPlugin();
 
+    const cursorTheme = EditorView.theme({
+      '.cm-cursor, .cm-cursorLayer .cm-cursor': {
+        borderLeft: '2.5px solid var(--iv-cursor-color, rgb(89, 193, 250)) !important',
+        borderLeftWidth: '2.5px !important',
+        borderRadius: '2px !important',
+        marginLeft: '-1px',
+      },
+      '.cm-content': {
+        caretColor: 'var(--iv-cursor-color, rgb(89, 193, 250)) !important',
+      },
+    });
+
     const state = EditorState.create({
       doc: initialDoc,
       extensions: [
         history(),
+        drawSelection(),
+        cursorTheme,
         keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap]),
         search({ top: true }),
         markdown(),
@@ -103,7 +120,8 @@ export class IVEditor {
           if (
             update.docChanged ||
             update.selectionSet ||
-            update.viewportChanged
+            update.viewportChanged ||
+            update.transactions.some((tr) => tr.effects.some((e) => e.is(updateFocusEffect)))
           ) {
             this.decorations = this.buildDecorations(update.view);
           }
@@ -117,38 +135,55 @@ export class IVEditor {
           const cursorPos = mainSelection.head;
           const hasSelection = mainSelection.from !== mainSelection.to;
 
-          if (!settings.enabled || text.length === 0) {
-            return Decoration.none;
-          }
-
-          let activeRange: { from: number; to: number };
-          if (hasSelection) {
-            activeRange = { from: Math.min(mainSelection.from, mainSelection.to), to: Math.max(mainSelection.from, mainSelection.to) };
-          } else {
-            const ranges =
-              settings.mode === 'sentence'
-                ? FocusEngine.extractSentenceRanges(text)
-                : settings.mode === 'paragraph'
-                ? FocusEngine.extractParagraphRanges(text)
-                : FocusEngine.extractLineRanges(text);
-
-            activeRange = FocusEngine.findActiveRange(ranges, cursorPos);
-          }
-
-          const dimmedRanges = FocusEngine.calculateDimmedRanges(text.length, activeRange);
           const builder: { from: number; to: number; deco: Decoration }[] = [];
 
-          const dimDeco = Decoration.mark({
-            class: 'iv-dimmed',
+          // 1. iA Writer Signature Outdented Heading Markers (#, ##, ###, ####)
+          const headingDeco = Decoration.mark({
+            class: 'iv-heading-mark',
           });
 
-          for (const d of dimmedRanges) {
-            if (d.from < d.to) {
+          for (let i = 1; i <= doc.lines; i++) {
+            const line = doc.line(i);
+            const match = line.text.match(/^(#{1,6}\s+)/);
+            if (match) {
+              const markLen = match[1].length;
               builder.push({
-                from: d.from,
-                to: d.to,
-                deco: dimDeco,
+                from: line.from,
+                to: line.from + markLen,
+                deco: headingDeco,
               });
+            }
+          }
+
+          // 2. Focus Dimming
+          if (settings.enabled && text.length > 0) {
+            let activeRange: { from: number; to: number };
+            if (hasSelection) {
+              activeRange = { from: Math.min(mainSelection.from, mainSelection.to), to: Math.max(mainSelection.from, mainSelection.to) };
+            } else {
+              const ranges =
+                settings.mode === 'sentence'
+                  ? FocusEngine.extractSentenceRanges(text)
+                  : settings.mode === 'paragraph'
+                  ? FocusEngine.extractParagraphRanges(text)
+                  : FocusEngine.extractLineRanges(text);
+
+              activeRange = FocusEngine.findActiveRange(ranges, cursorPos);
+            }
+
+            const dimmedRanges = FocusEngine.calculateDimmedRanges(text.length, activeRange);
+            const dimDeco = Decoration.mark({
+              class: 'iv-dimmed',
+            });
+
+            for (const d of dimmedRanges) {
+              if (d.from < d.to) {
+                builder.push({
+                  from: d.from,
+                  to: d.to,
+                  deco: dimDeco,
+                });
+              }
             }
           }
 
@@ -170,13 +205,14 @@ export class IVEditor {
       const newText = update.state.doc.toString();
       this.computeDocumentStats(newText);
 
-      // Debounce auto-save
+      // Fast debounce auto-save (80ms)
       if (this.saveDebounceTimer) {
         clearTimeout(this.saveDebounceTimer);
       }
       this.saveDebounceTimer = setTimeout(() => {
+        this.saveDebounceTimer = null;
         this.callbacks.onDocChange(newText);
-      }, this.currentSettings.editor.autoSaveDebounce);
+      }, 80);
     }
 
     if (update.selectionSet || update.docChanged) {
@@ -186,6 +222,26 @@ export class IVEditor {
       const selLen = Math.abs(main.to - main.from);
 
       this.callbacks.onCursorChange(line.number, col, selLen);
+
+      // Detect current line format
+      const lineText = line.text;
+      let blockFmt = 'p';
+      if (/^#{1,6}\s+/.test(lineText)) {
+        const match = lineText.match(/^(#{1,6})\s+/);
+        if (match) {
+          blockFmt = `h${match[1].length}`;
+        }
+      } else if (/^-\s+\[[ xX]\]\s+/.test(lineText)) {
+        blockFmt = 'task';
+      } else if (/^\d+\.\s+\[[ xX]\]\s+/.test(lineText)) {
+        blockFmt = 'numtask';
+      } else if (/^[-*+]\s+/.test(lineText)) {
+        blockFmt = 'list';
+      } else if (/^\d+\.\s+/.test(lineText)) {
+        blockFmt = 'numlist';
+      }
+
+      this.callbacks.onFormatChange?.(blockFmt);
 
       if (!this.isComposing) {
         this.scrollEngine.scrollToCursor();
@@ -232,6 +288,9 @@ export class IVEditor {
   }
 
   public setContent(content: string): void {
+    if (this.isComposing) {
+      return;
+    }
     const currentDoc = this.view.state.doc.toString();
     if (currentDoc !== content) {
       this.view.dispatch({
@@ -241,20 +300,40 @@ export class IVEditor {
     }
   }
 
+  public flushSave(): void {
+    if (this.saveDebounceTimer) {
+      clearTimeout(this.saveDebounceTimer);
+      this.saveDebounceTimer = null;
+    }
+    const currentText = this.view.state.doc.toString();
+    this.callbacks.onDocChange(currentText);
+  }
+
   public updateSettings(newSettings: IVWriterSettings): void {
     this.currentSettings = newSettings;
+    const isLocked = newSettings.focus.anchor > 0.1;
+    document.body.setAttribute('data-center-lock', isLocked ? 'true' : 'false');
     this.scrollEngine.setAnchor(newSettings.focus.anchor);
     this.scrollEngine.setEnabled(newSettings.focus.enabled);
 
-    // Force re-render decorations
+    // Force re-render decorations immediately
     this.view.dispatch({
-      effects: [],
+      effects: [updateFocusEffect.of(null)],
     });
   }
 
   public toggleFocusMode(): void {
     this.currentSettings.focus.enabled = !this.currentSettings.focus.enabled;
     this.updateSettings(this.currentSettings);
+  }
+
+  public toggleCenterLock(): void {
+    const isLocked = this.currentSettings.focus.anchor > 0.1;
+    this.currentSettings.focus.anchor = isLocked ? 0.0 : 0.50;
+    this.updateSettings(this.currentSettings);
+    if (!isLocked) {
+      this.scrollEngine.scrollToCursor(true);
+    }
   }
 
   public cycleFocusMode(): void {
@@ -275,6 +354,10 @@ export class IVEditor {
     openSearchPanel(this.view);
   }
 
+  public getContent(): string {
+    return this.view.state.doc.toString();
+  }
+
   public insertFormat(formatType: string): void {
     const selection = this.view.state.selection.main;
     const selectedText = this.view.state.sliceDoc(selection.from, selection.to);
@@ -289,7 +372,7 @@ export class IVEditor {
         break;
       }
       case 'italic': {
-        const text = selectedText || '이탤릭체';
+        const text = selectedText || '이탈릭체';
         this.view.dispatch({
           changes: { from: selection.from, to: selection.to, insert: `*${text}*` },
           selection: { anchor: selection.from + 1, head: selection.from + 1 + text.length },
@@ -306,63 +389,103 @@ export class IVEditor {
       }
       case 'h1': {
         const line = this.view.state.doc.lineAt(selection.head);
+        const cleaned = line.text.replace(/^([#>\-\*\+\d\.]+(\s+\[[ xX]\])?\s+)/, '');
         this.view.dispatch({
-          changes: { from: line.from, to: line.from, insert: '# ' },
+          changes: { from: line.from, to: line.to, insert: `# ${cleaned}` },
+        });
+        break;
+      }
+      case 'h2': {
+        const line = this.view.state.doc.lineAt(selection.head);
+        const cleaned = line.text.replace(/^([#>\-\*\+\d\.]+(\s+\[[ xX]\])?\s+)/, '');
+        this.view.dispatch({
+          changes: { from: line.from, to: line.to, insert: `## ${cleaned}` },
+        });
+        break;
+      }
+      case 'h3': {
+        const line = this.view.state.doc.lineAt(selection.head);
+        const cleaned = line.text.replace(/^([#>\-\*\+\d\.]+(\s+\[[ xX]\])?\s+)/, '');
+        this.view.dispatch({
+          changes: { from: line.from, to: line.to, insert: `### ${cleaned}` },
+        });
+        break;
+      }
+      case 'h4': {
+        const line = this.view.state.doc.lineAt(selection.head);
+        const cleaned = line.text.replace(/^([#>\-\*\+\d\.]+(\s+\[[ xX]\])?\s+)/, '');
+        this.view.dispatch({
+          changes: { from: line.from, to: line.to, insert: `#### ${cleaned}` },
+        });
+        break;
+      }
+      case 'h5': {
+        const line = this.view.state.doc.lineAt(selection.head);
+        const cleaned = line.text.replace(/^([#>\-\*\+\d\.]+(\s+\[[ xX]\])?\s+)/, '');
+        this.view.dispatch({
+          changes: { from: line.from, to: line.to, insert: `##### ${cleaned}` },
+        });
+        break;
+      }
+      case 'h6': {
+        const line = this.view.state.doc.lineAt(selection.head);
+        const cleaned = line.text.replace(/^([#>\-\*\+\d\.]+(\s+\[[ xX]\])?\s+)/, '');
+        this.view.dispatch({
+          changes: { from: line.from, to: line.to, insert: `###### ${cleaned}` },
         });
         break;
       }
       case 'list': {
         const line = this.view.state.doc.lineAt(selection.head);
+        const cleaned = line.text.replace(/^([#>\-\*\+\d\.]+(\s+\[[ xX]\])?\s+)/, '');
         this.view.dispatch({
-          changes: { from: line.from, to: line.from, insert: '- ' },
+          changes: { from: line.from, to: line.to, insert: `- ${cleaned}` },
+        });
+        break;
+      }
+      case 'numlist': {
+        const line = this.view.state.doc.lineAt(selection.head);
+        const cleaned = line.text.replace(/^([#>\-\*\+\d\.]+(\s+\[[ xX]\])?\s+)/, '');
+        this.view.dispatch({
+          changes: { from: line.from, to: line.to, insert: `1. ${cleaned}` },
+        });
+        break;
+      }
+      case 'task': {
+        const line = this.view.state.doc.lineAt(selection.head);
+        const cleaned = line.text.replace(/^([#>\-\*\+\d\.]+(\s+\[[ xX]\])?\s+)/, '');
+        this.view.dispatch({
+          changes: { from: line.from, to: line.to, insert: `- [ ] ${cleaned}` },
+        });
+        break;
+      }
+      case 'numtask': {
+        const line = this.view.state.doc.lineAt(selection.head);
+        const cleaned = line.text.replace(/^([#>\-\*\+\d\.]+(\s+\[[ xX]\])?\s+)/, '');
+        this.view.dispatch({
+          changes: { from: line.from, to: line.to, insert: `1. [ ] ${cleaned}` },
         });
         break;
       }
       case 'quote': {
         const line = this.view.state.doc.lineAt(selection.head);
+        const cleaned = line.text.replace(/^([#>\-\*\+\d\.]+(\s+\[[ xX]\])?\s+)/, '');
         this.view.dispatch({
-          changes: { from: line.from, to: line.from, insert: '> ' },
+          changes: { from: line.from, to: line.to, insert: `> ${cleaned}` },
         });
         break;
       }
-      case 'link': {
-        const text = selectedText || '링크 텍스트';
+      case 'code': {
+        const text = selectedText || '코드 내용 입력';
         this.view.dispatch({
-          changes: { from: selection.from, to: selection.to, insert: `[${text}](https://)` },
-        });
-        break;
-      }
-      case 'wikilink': {
-        const text = selectedText || '문서명';
-        this.view.dispatch({
-          changes: { from: selection.from, to: selection.to, insert: `[[${text}]]` },
-        });
-        break;
-      }
-      case 'footnote': {
-        this.view.dispatch({
-          changes: { from: selection.to, insert: `[^1]\n\n[^1]: 각주 내용` },
-        });
-        break;
-      }
-      case 'table': {
-        const tableTemplate = `\n| 제목 1 | 제목 2 |\n| --- | --- |\n| 내용 1 | 내용 2 |\n`;
-        this.view.dispatch({
-          changes: { from: selection.to, insert: tableTemplate },
-        });
-        break;
-      }
-      case 'toc': {
-        this.view.dispatch({
-          changes: { from: selection.to, insert: `[TOC]\n` },
+          changes: { from: selection.from, to: selection.to, insert: `\`\`\`\n${text}\n\`\`\`` },
         });
         break;
       }
       case 'p': {
-        // Plain text: remove markdown prefixes
+        // Plain text: remove all markdown prefixes
         const line = this.view.state.doc.lineAt(selection.head);
-        const lineText = line.text;
-        const cleaned = lineText.replace(/^([#>\-\*\+\d\.]+\s+)/, '');
+        const cleaned = line.text.replace(/^([#>\-\*\+\d\.]+(\s+\[[ xX]\])?\s+)/, '');
         this.view.dispatch({
           changes: { from: line.from, to: line.to, insert: cleaned },
         });

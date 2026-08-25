@@ -4,14 +4,23 @@
 @import './focus.css';
 @import './cursor.css';
 
-/* Global Reset */
+/* Global Reset & Focus Outline Removal */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent !important;
 }
 
-html, body {
+*:focus,
+*:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+html,
+body {
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -21,6 +30,7 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background-color 0.15s ease, color 0.15s ease;
+  outline: none !important;
 }
 
 .iv-container {
@@ -29,157 +39,156 @@ html, body {
   height: 100%;
   display: flex;
   flex-direction: column;
+  outline: none !important;
 }
 
 /* ==========================================================================
-   Top Navigation Header (Screenshot 1 Exact Match)
+   Clean Top Navigation Header with Logo & Preview Button
    ========================================================================== */
 .iv-top-nav {
-  height: 42px;
-  min-height: 42px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 38px;
+  min-height: 38px;
   padding: 0 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   background-color: var(--iv-bar-bg);
   border-bottom: 1px solid var(--iv-bar-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: 500;
   color: var(--iv-bar-fg);
   user-select: none;
-  z-index: 100;
+  -webkit-user-select: none;
+  z-index: 800;
+  transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
-.iv-nav-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.iv-top-nav.iv-hud-hidden {
+  opacity: 0;
+  transform: translateY(-100%);
+  pointer-events: none;
 }
 
 .iv-window-dots {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
 }
 
 .dot {
-  width: 11px;
-  height: 11px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  display: inline-block;
-}
-
-.dot-red { background-color: #FF5F56; }
-.dot-yellow { background-color: #FFBD2E; }
-.dot-green { background-color: #27C93F; }
-
-.iv-nav-arrows {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  background: var(--iv-bar-hover);
-  border-radius: 4px;
-  padding: 1px;
-}
-
-.iv-nav-arrow {
-  background: transparent;
   border: none;
-  color: var(--iv-bar-muted);
-  font-size: 14px;
-  width: 18px;
-  height: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
-  border-radius: 3px;
+  padding: 0;
+  display: inline-block;
+  transition: transform 0.12s ease, opacity 0.12s ease;
 }
 
-.iv-nav-arrow:hover {
-  color: var(--iv-bar-fg);
-  background: rgba(0, 0, 0, 0.05);
+.dot:hover {
+  transform: scale(1.15);
+  opacity: 0.85;
 }
 
-.iv-nav-center {
-  flex: 1;
+.dot-red {
+  background-color: #FF5F56;
+}
+
+.dot-yellow {
+  background-color: #FFBD2E;
+}
+
+.dot-green {
+  background-color: #27C93F;
+}
+
+.iv-title-wrapper {
   display: flex;
-  justify-content: center;
   align-items: center;
+  gap: 7px;
+}
+
+.iv-top-logo {
+  width: 17px;
+  height: 17px;
+  border-radius: 4px;
+  object-fit: contain;
 }
 
 .iv-doc-title {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--iv-bar-fg);
   letter-spacing: -0.01em;
+  opacity: 0.88;
 }
 
-.iv-nav-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.iv-nav-btn {
+.iv-btn-preview {
   background: transparent;
   border: 1px solid transparent;
   color: var(--iv-bar-fg);
-  font-size: 12px;
-  font-weight: 500;
-  padding: 4px 8px;
-  border-radius: 6px;
+  font-size: 13px;
+  width: 26px;
+  height: 26px;
+  border-radius: 5px;
   display: flex;
   align-items: center;
-  gap: 5px;
+  justify-content: center;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
-.iv-nav-btn:hover {
-  background: var(--iv-bar-hover);
-  border-color: var(--iv-bar-border);
-}
-
-.iv-nav-btn.iv-focus-pill {
-  background: var(--iv-bar-hover);
-  border-color: var(--iv-bar-border);
-}
-
-.iv-nav-btn.iv-focus-pill.active {
+.iv-btn-preview:hover {
   color: var(--iv-bar-active);
-  border-color: rgba(0, 122, 255, 0.3);
-  background: rgba(0, 122, 255, 0.06);
+  background: var(--iv-bar-hover);
+  border-color: var(--iv-bar-border);
 }
 
-.iv-dropdown-arrow {
-  font-size: 10px;
-  opacity: 0.6;
+.iv-btn-preview.active {
+  color: var(--iv-bar-active);
+  background: rgba(89, 193, 250, 0.12);
+  border-color: rgba(89, 193, 250, 0.3);
 }
 
 /* ==========================================================================
-   Editor Container
+   Editor & Preview Container
    ========================================================================== */
 .iv-editor-container {
   flex: 1;
   width: 100%;
-  height: calc(100% - 78px);
+  height: 100%;
   overflow: hidden;
+  cursor: text;
+  outline: none !important;
 }
 
 .cm-editor {
   width: 100%;
   height: 100%;
+  outline: none !important;
 }
 
 .cm-scroller {
   overflow-x: hidden !important;
   overflow-y: auto !important;
   scrollbar-width: none;
+  outline: none !important;
 }
 
 .cm-scroller::-webkit-scrollbar {
   display: none;
+}
+
+.cm-content {
+  outline: none !important;
 }
 
 .cm-focused {
@@ -187,40 +196,248 @@ html, body {
 }
 
 /* ==========================================================================
-   Bottom Format Bar (Screenshot 1 Exact Match)
+   Markdown Preview View (iA Writer Clean Typography)
+   ========================================================================== */
+.iv-preview-container {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 48px min(96px, 14vw) 120px min(96px, 14vw);
+  max-width: 580px;
+  margin: 0 auto;
+  font-family: var(--iv-font-family, "iA Writer Duo", "iA Writer Mono", "SF Mono", Menlo, Monaco, "Pretendard", monospace);
+  font-size: 19.5px;
+  line-height: 2.0;
+  letter-spacing: 0.015em;
+  color: var(--iv-fg);
+  box-sizing: border-box;
+}
+
+.iv-preview-container h1,
+.iv-preview-container h2,
+.iv-preview-container h3,
+.iv-preview-container h4 {
+  color: var(--iv-fg);
+  font-weight: 700;
+  line-height: 1.4;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.iv-preview-container h1 {
+  font-size: 1.55em;
+}
+
+.iv-preview-container h2 {
+  font-size: 1.3em;
+}
+
+.iv-preview-container h3 {
+  font-size: 1.15em;
+}
+
+.iv-preview-container p {
+  margin-bottom: 1.2em;
+}
+
+.iv-preview-container blockquote {
+  border-left: 3px solid var(--iv-bar-active);
+  padding-left: 16px;
+  margin: 1.4em 0;
+  color: var(--iv-bar-fg);
+  font-style: italic;
+}
+
+.iv-preview-container ul,
+.iv-preview-container ol {
+  margin: 1em 0 1.4em 1.6em;
+}
+
+.iv-preview-container li {
+  margin-bottom: 0.4em;
+}
+
+.iv-preview-container .iv-task-list {
+  list-style: none;
+  padding-left: 0;
+  margin-left: 0;
+}
+
+.iv-preview-container .iv-task-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.iv-preview-container code {
+  font-family: "iA Writer Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.9em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background-color: var(--iv-code-bg);
+}
+
+.iv-preview-container pre {
+  background-color: var(--iv-code-bg);
+  border-radius: 6px;
+  padding: 14px 18px;
+  overflow-x: auto;
+  margin: 1.4em 0;
+}
+
+.iv-preview-container pre code {
+  padding: 0;
+  background: transparent;
+}
+
+.iv-preview-container a {
+  color: var(--iv-bar-active);
+  text-decoration: underline;
+}
+
+.iv-preview-container hr {
+  border: none;
+  border-top: 1px solid var(--iv-bar-border);
+  margin: 2.2em 0;
+}
+
+.iv-preview-empty {
+  color: var(--iv-bar-muted);
+  font-style: italic;
+  text-align: center;
+  margin-top: 20vh;
+}
+
+/* ==========================================================================
+   Bottom Format Bar (Streamlined Select Dropdown & Auto-Hide HUD)
    ========================================================================== */
 .iv-format-bar {
-  height: 36px;
-  min-height: 36px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 34px;
+  min-height: 34px;
   padding: 0 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   background-color: var(--iv-bar-bg);
   border-top: 1px solid var(--iv-bar-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 12px;
-  color: var(--iv-bar-muted);
+  color: var(--iv-bar-fg);
   user-select: none;
-  z-index: 100;
-  overflow-x: auto;
+  -webkit-user-select: none;
+  z-index: 800;
+  overflow: visible !important;
+  transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.iv-format-bar.iv-hud-hidden {
+  opacity: 0;
+  transform: translateY(100%);
+  pointer-events: none;
 }
 
 .iv-format-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 6px;
+  overflow: visible !important;
+}
+
+/* ==========================================================================
+   Custom Dropdown Menus (Exact Match to Reference Screenshot)
+   ========================================================================== */
+.iv-dropdown-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  overflow: visible !important;
+}
+
+.iv-dropdown-menu {
+  display: none;
+  position: absolute;
+  bottom: 34px !important;
+  left: 0;
+  min-width: 155px;
+  background: var(--iv-bar-bg, #ffffff) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border: 1px solid var(--iv-bar-border, rgba(0, 0, 0, 0.12)) !important;
+  border-radius: 9px !important;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  padding: 5px !important;
+  z-index: 99999 !important;
+  user-select: none;
+}
+
+.iv-dropdown-menu.open {
+  display: block !important;
+  animation: ivPopupIn 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body[data-theme="dark"] .iv-dropdown-menu {
+  background: rgba(36, 36, 36, 0.96) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55) !important;
+}
+
+@keyframes ivPopupIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.iv-dropdown-item {
+  padding: 6px 12px;
+  font-size: 13px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--iv-fg);
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.1s ease, color 0.1s ease;
+}
+
+.iv-dropdown-item:hover {
+  background: var(--iv-bar-active, rgb(89, 193, 250)) !important;
+  color: #ffffff !important;
+}
+
+.iv-fmt-divider {
+  width: 1px;
+  height: 13px;
+  background-color: var(--iv-bar-border);
+  margin: 0 6px;
+  opacity: 0.8;
 }
 
 .iv-fmt-item {
   background: transparent;
   border: none;
-  color: var(--iv-bar-muted);
+  color: var(--iv-bar-fg);
   font-size: 12px;
   cursor: pointer;
   padding: 3px 6px;
   border-radius: 4px;
   white-space: nowrap;
+  font-family: inherit;
   transition: all 0.12s ease;
 }
 
@@ -236,7 +453,19 @@ html, body {
 
 .iv-fmt-bold {
   font-weight: 700;
-  color: var(--iv-bar-fg);
+}
+
+.iv-fmt-italic {
+  font-style: italic;
+}
+
+.iv-fmt-strike {
+  text-decoration: line-through;
+}
+
+.iv-fmt-control {
+  color: var(--iv-bar-active);
+  font-weight: 500;
 }
 
 .iv-format-right {
@@ -247,16 +476,16 @@ html, body {
 .iv-fmt-stats {
   background: transparent;
   border: none;
-  color: var(--iv-bar-muted);
+  color: var(--iv-bar-fg);
   font-size: 12px;
   cursor: pointer;
   padding: 3px 8px;
   border-radius: 4px;
   white-space: nowrap;
+  font-family: inherit;
   transition: all 0.12s ease;
 }
 
 .iv-fmt-stats:hover {
-  color: var(--iv-bar-fg);
   background: var(--iv-bar-hover);
 }

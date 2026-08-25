@@ -1,13 +1,13 @@
 /* Authentic iA Writer Color Palettes */
 
-/* Paper / Light Theme (Exact match: bg rgb(247,247,247), dim rgb(198,196,194), caret #007AFF) */
+/* Paper / Light Theme (Exact match: bg rgb(247,247,247), dim rgb(198,196,194), caret rgb(89, 193, 250)) */
 body[data-theme="paper"], body[data-theme="light"] {
   --iv-bg: rgb(247, 247, 247);
   --iv-fg: #111111;
   --iv-fg-dimmed: rgb(198, 196, 194);
   --iv-dimmed-opacity: 1.0;
-  --iv-cursor-color: #007AFF; /* Iconic Electric Sky Blue */
-  --iv-selection-bg: #B4D5FE;
+  --iv-cursor-color: rgb(89, 193, 250); /* Beautiful Sky Blue */
+  --iv-selection-bg: rgba(89, 193, 250, 0.35);
   --iv-syntax-muted: rgb(198, 196, 194);
   --iv-code-bg: rgba(0, 0, 0, 0.05);
 
@@ -16,7 +16,7 @@ body[data-theme="paper"], body[data-theme="light"] {
   --iv-bar-border: rgba(0, 0, 0, 0.08);
   --iv-bar-fg: #444444;
   --iv-bar-muted: #888888;
-  --iv-bar-active: #007AFF;
+  --iv-bar-active: rgb(89, 193, 250);
   --iv-bar-hover: rgba(0, 0, 0, 0.05);
 }
 
@@ -26,8 +26,8 @@ body[data-theme="dark"] {
   --iv-fg: #EDEDED;
   --iv-fg-dimmed: #555555;
   --iv-dimmed-opacity: 1.0;
-  --iv-cursor-color: #0091FF; /* Bright Neon Cyan */
-  --iv-selection-bg: rgba(0, 122, 255, 0.35);
+  --iv-cursor-color: rgb(89, 193, 250); /* Beautiful Sky Blue */
+  --iv-selection-bg: rgba(89, 193, 250, 0.35);
   --iv-syntax-muted: #555555;
   --iv-code-bg: rgba(255, 255, 255, 0.06);
 
@@ -35,7 +35,7 @@ body[data-theme="dark"] {
   --iv-bar-border: rgba(255, 255, 255, 0.08);
   --iv-bar-fg: #CCCCCC;
   --iv-bar-muted: #777777;
-  --iv-bar-active: #0091FF;
+  --iv-bar-active: rgb(89, 193, 250);
   --iv-bar-hover: rgba(255, 255, 255, 0.06);
 }
 
@@ -45,8 +45,8 @@ body[data-theme="sepia"] {
   --iv-fg: #3E342B;
   --iv-fg-dimmed: #A89F93;
   --iv-dimmed-opacity: 1.0;
-  --iv-cursor-color: #D9534F; /* Vintage Crimson */
-  --iv-selection-bg: rgba(217, 83, 79, 0.22);
+  --iv-cursor-color: rgb(89, 193, 250); /* Sky Blue Accent */
+  --iv-selection-bg: rgba(89, 193, 250, 0.3);
   --iv-syntax-muted: #A89F93;
   --iv-code-bg: rgba(62, 52, 43, 0.06);
 
@@ -54,7 +54,7 @@ body[data-theme="sepia"] {
   --iv-bar-border: rgba(62, 52, 43, 0.1);
   --iv-bar-fg: #5C4F43;
   --iv-bar-muted: #9E9184;
-  --iv-bar-active: #D9534F;
+  --iv-bar-active: rgb(89, 193, 250);
   --iv-bar-hover: rgba(62, 52, 43, 0.06);
 }
 
@@ -64,8 +64,8 @@ body[data-theme="midnight"] {
   --iv-fg: #E6EDF3;
   --iv-fg-dimmed: #484F58;
   --iv-dimmed-opacity: 1.0;
-  --iv-cursor-color: #58A6FF;
-  --iv-selection-bg: rgba(88, 166, 255, 0.25);
+  --iv-cursor-color: rgb(89, 193, 250);
+  --iv-selection-bg: rgba(89, 193, 250, 0.35);
   --iv-syntax-muted: #484F58;
   --iv-code-bg: rgba(255, 255, 255, 0.05);
 
@@ -73,6 +73,6 @@ body[data-theme="midnight"] {
   --iv-bar-border: rgba(255, 255, 255, 0.1);
   --iv-bar-fg: #8B949E;
   --iv-bar-muted: #586069;
-  --iv-bar-active: #58A6FF;
+  --iv-bar-active: rgb(89, 193, 250);
   --iv-bar-hover: rgba(255, 255, 255, 0.06);
 }

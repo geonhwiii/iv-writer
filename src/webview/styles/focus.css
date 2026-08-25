@@ -5,17 +5,25 @@
   color: var(--iv-fg-dimmed, rgb(198, 196, 194)) !important;
   opacity: var(--iv-dimmed-opacity, 1.0) !important;
   transition: color 0.12s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: color;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  pointer-events: auto !important;
 }
 
-/* Active/Focused text is 100% full crisp black */
+/* Active/Focused text is 100% full crisp black/white */
 .iv-line-focused {
   color: var(--iv-fg) !important;
   opacity: 1.0 !important;
 }
 
+/* Selection */
+.cm-selectionBackground, ::selection {
+  background-color: var(--iv-selection-bg, rgba(89, 193, 250, 0.35)) !important;
+}
+
 /* Caret */
 .cm-cursor {
-  border-left-color: var(--iv-cursor-color) !important;
-  border-left-width: 2px !important;
+  border-left-color: var(--iv-cursor-color, rgb(89, 193, 250)) !important;
+  border-left-width: 2.5px !important;
+  border-radius: 2px !important;
 }

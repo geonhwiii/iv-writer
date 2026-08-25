@@ -4,7 +4,7 @@ import { IVWriterSettings } from '../shared/settings';
 import { StatusBarManager } from './statusBar';
 
 export class IVWriterEditorProvider implements vscode.CustomTextEditorProvider {
-  public static readonly viewType = 'ivWriter.editor';
+  public static readonly viewType = 'iv-writer.editor';
   public static activePanel: vscode.WebviewPanel | null = null;
 
   public static getActivePanel(): vscode.WebviewPanel | null {
@@ -46,6 +46,7 @@ export class IVWriterEditorProvider implements vscode.CustomTextEditorProvider {
       localResourceRoots: [
         vscode.Uri.joinPath(this.context.extensionUri, 'dist'),
         vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'webview'),
+        vscode.Uri.joinPath(this.context.extensionUri, 'assets'),
       ],
     };
 
@@ -102,6 +103,8 @@ export class IVWriterEditorProvider implements vscode.CustomTextEditorProvider {
       webviewPanel.webview.postMessage(msg);
     };
 
+    let lastSentToDoc = document.getText();
+
     const changeConfigSub = vscode.workspace.onDidChangeConfiguration((e) => {
       if (e.affectsConfiguration('ivWriter')) {
         syncSettings();
@@ -110,19 +113,20 @@ export class IVWriterEditorProvider implements vscode.CustomTextEditorProvider {
 
     const changeDocSub = vscode.workspace.onDidChangeTextDocument((e) => {
       if (e.document.uri.toString() === document.uri.toString()) {
-        if (isUpdatingFromWebview) {
+        const currentText = document.getText();
+        // If change originated from our webview edit, DO NOT echo back
+        if (currentText === lastSentToDoc) {
           return;
         }
-        isUpdatingFromHost = true;
+        lastSentToDoc = currentText;
         const msg: HostToWebviewMessage = {
           type: 'DOC_CHANGED',
           payload: {
-            content: document.getText(),
+            content: currentText,
             version: document.version,
           },
         };
         webviewPanel.webview.postMessage(msg);
-        isUpdatingFromHost = false;
       }
     });
 
@@ -144,9 +148,9 @@ export class IVWriterEditorProvider implements vscode.CustomTextEditorProvider {
                 'typography.fontFamily',
                 '"iA Writer Duo", "iA Writer Mono", "SF Mono", Menlo, Monaco, "Pretendard", monospace'
               ),
-              fontSize: config.get<number>('typography.fontSize', 19),
-              lineHeight: config.get<number>('typography.lineHeight', 1.8),
-              maxWidth: config.get<number>('typography.maxWidth', 680),
+              fontSize: config.get<number>('typography.fontSize', 19.5),
+              lineHeight: config.get<number>('typography.lineHeight', 2.0),
+              maxWidth: config.get<number>('typography.maxWidth', 580),
             },
             theme: {
               preset: config.get<'paper' | 'dark' | 'sepia' | 'midnight'>('theme.preset', 'paper'),
@@ -165,6 +169,7 @@ export class IVWriterEditorProvider implements vscode.CustomTextEditorProvider {
             },
           };
 
+          lastSentToDoc = document.getText();
           const initMsg: HostToWebviewMessage = {
             type: 'INIT',
             payload: {
@@ -179,10 +184,7 @@ export class IVWriterEditorProvider implements vscode.CustomTextEditorProvider {
         }
 
         case 'TEXT_EDIT': {
-          if (isUpdatingFromHost) {
-            return;
-          }
-          isUpdatingFromWebview = true;
+          lastSentToDoc = message.payload.content;
           const edit = new vscode.WorkspaceEdit();
           const fullRange = new vscode.Range(
             document.positionAt(0),
@@ -190,7 +192,6 @@ export class IVWriterEditorProvider implements vscode.CustomTextEditorProvider {
           );
           edit.replace(document.uri, fullRange, message.payload.content);
           await vscode.workspace.applyEdit(edit);
-          isUpdatingFromWebview = false;
           break;
         }
 
@@ -211,6 +212,21 @@ export class IVWriterEditorProvider implements vscode.CustomTextEditorProvider {
 
         case 'SHOW_MENU': {
           vscode.commands.executeCommand('iv-writer.showQuickMenu');
+          break;
+        }
+
+        case 'REOPEN_DEFAULT': {
+          await vscode.commands.executeCommand('workbench.action.reopenTextEditor');
+          break;
+        }
+
+        case 'CLOSE_TAB': {
+          await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+          break;
+        }
+
+        case 'TOGGLE_FULLSCREEN': {
+          await vscode.commands.executeCommand('workbench.action.toggleZenMode');
           break;
         }
 
@@ -236,6 +252,9 @@ export class IVWriterEditorProvider implements vscode.CustomTextEditorProvider {
     const styleUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'webview', 'index.css')
     );
+    const logoUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this.context.extensionUri, 'assets', 'logo.png')
+    );
 
     const nonce = getNonce();
 
@@ -243,70 +262,88 @@ export class IVWriterEditorProvider implements vscode.CustomTextEditorProvider {
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}'; font-src ${webview.cspSource} https: data:;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline' https:; script-src 'nonce-${nonce}'; font-src ${webview.cspSource} https: data:; img-src ${webview.cspSource} https: data:; connect-src https:;">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="${styleUri}">
   <title>iV Writer</title>
 </head>
 <body>
   <div id="app" class="iv-container">
-    <!-- Top Navigation Header (Screenshot 1 Exact Replicaton) -->
+    <!-- Clean Minimal Title Header with Window Dots, Logo & Preview Button -->
     <header class="iv-top-nav">
-      <div class="iv-nav-left">
-        <div class="iv-window-dots">
-          <span class="dot dot-red"></span>
-          <span class="dot dot-yellow"></span>
-          <span class="dot dot-green"></span>
-        </div>
-        <button id="btn-sidebar-toggle" class="iv-nav-btn" title="사이드바 토글">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
-        </button>
-        <div class="iv-nav-arrows">
-          <button class="iv-nav-arrow" title="뒤로가기">‹</button>
-          <button class="iv-nav-arrow" title="앞으로가기">›</button>
-        </div>
+      <div class="iv-window-dots">
+        <button id="dot-red" class="dot dot-red" title="iV Writer 끄기 / 기본 텍스트 에디터로 전환"></button>
+        <button id="dot-yellow" class="dot dot-yellow" title="에디터 탭 닫기"></button>
+        <button id="dot-green" class="dot dot-green" title="iV Writer 집중 전체화면 모드 토글"></button>
       </div>
-
-      <div class="iv-nav-center">
-        <span class="iv-doc-title">${fileName}</span>
+      <div class="iv-title-wrapper">
+        <img src="${logoUri}" alt="iV Writer Logo" class="iv-top-logo" />
       </div>
-
-      <div class="iv-nav-right">
-        <button id="btn-focus-mode" class="iv-nav-btn iv-focus-pill" title="포커스 모드 전환 (문장/문단/끄기) [Cmd+/]">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="6" y1="18" x2="18" y2="18"/></svg>
-          <span id="label-focus">문장 포커스</span>
-          <span class="iv-dropdown-arrow">▾</span>
-        </button>
-        <button id="btn-theme" class="iv-nav-btn" title="테마 변경 (Paper / Dark / Sepia) [Cmd+K Cmd+T]">
-          <span id="label-theme">Paper</span>
-        </button>
-        <button id="btn-search" class="iv-nav-btn" title="문서 검색 (Cmd+F)">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        </button>
-        <button id="btn-settings" class="iv-nav-btn" title="퀵 메뉴 및 단축키">
-          ⚙️
-        </button>
-      </div>
+      <button id="btn-preview" class="iv-btn-preview" title="마크다운 미리보기 모드 토글 (Cmd+Shift+V)">
+        <svg id="icon-play" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <svg id="icon-edit" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      </button>
     </header>
 
-    <!-- Main Editor Mount Point -->
+    <!-- Main Writing Editor -->
     <main id="editor-container" class="iv-editor-container"></main>
 
-    <!-- Bottom Format Bar (Screenshot 1 Exact Replicaton) -->
+    <!-- Markdown Rendered Preview View -->
+    <article id="preview-container" class="iv-preview-container" style="display: none;"></article>
+
+    <!-- Bottom Format Bar (Streamlined with Select Dropdown) -->
     <footer class="iv-format-bar">
       <div class="iv-format-left">
-        <button class="iv-fmt-item active" data-fmt="p">본문</button>
-        <button class="iv-fmt-item" data-fmt="h1">제목 1 ↕</button>
-        <button class="iv-fmt-item" data-fmt="list">목록 ↕</button>
-        <button class="iv-fmt-item" data-fmt="quote">블록 따옴표</button>
+        <!-- Group 1: Structure (Body button + Heading Custom Dropdown + List Custom Dropdown) -->
+        <button id="btn-fmt-body" class="iv-fmt-item active" title="본문 서식으로 전환">본문</button>
+
+        <!-- Heading Dropdown -->
+        <div class="iv-dropdown-wrapper">
+          <button id="btn-fmt-heading" class="iv-fmt-item" title="제목 레벨 선택">
+            <span id="label-fmt-heading">제목 1</span> ↕
+          </button>
+          <div id="menu-fmt-heading" class="iv-dropdown-menu" style="display: none;">
+            <div class="iv-dropdown-item" data-val="h1">제목 1</div>
+            <div class="iv-dropdown-item" data-val="h2">제목 2</div>
+            <div class="iv-dropdown-item" data-val="h3">제목 3</div>
+            <div class="iv-dropdown-item" data-val="h4">제목 4</div>
+            <div class="iv-dropdown-item" data-val="h5">제목 5</div>
+            <div class="iv-dropdown-item" data-val="h6">제목 6</div>
+          </div>
+        </div>
+
+        <!-- List Dropdown (Exact Match from Screenshot) -->
+        <div class="iv-dropdown-wrapper">
+          <button id="btn-fmt-list" class="iv-fmt-item" title="목록 스타일 선택">
+            <span id="label-fmt-list">목록</span> ↕
+          </button>
+          <div id="menu-fmt-list" class="iv-dropdown-menu" style="display: none;">
+            <div class="iv-dropdown-item" data-val="list">목록</div>
+            <div class="iv-dropdown-item" data-val="numlist">순서가 지정된 목록</div>
+            <div class="iv-dropdown-item" data-val="task">작업</div>
+            <div class="iv-dropdown-item" data-val="numtask">순서가 지정된 작업</div>
+          </div>
+        </div>
+
+        <span class="iv-fmt-divider"></span>
+
+        <!-- Group 2: Inline Styles -->
         <button class="iv-fmt-item iv-fmt-bold" data-fmt="bold">볼드체</button>
-        <button class="iv-fmt-item" data-fmt="italic">이탤릭체</button>
-        <button class="iv-fmt-item" data-fmt="strike">취소선</button>
-        <button class="iv-fmt-item" data-fmt="link">링크</button>
-        <button class="iv-fmt-item" data-fmt="wikilink">위키링크</button>
-        <button class="iv-fmt-item" data-fmt="footnote">각주</button>
-        <button class="iv-fmt-item" data-fmt="table">표</button>
-        <button class="iv-fmt-item" data-fmt="toc">목차</button>
+        <button class="iv-fmt-item iv-fmt-italic" data-fmt="italic">이탈릭체</button>
+        <button class="iv-fmt-item iv-fmt-strike" data-fmt="strike">취소선</button>
+
+        <span class="iv-fmt-divider"></span>
+
+        <!-- Group 3: Quick Controls (Focus, Typewriter Lock & Theme) -->
+        <button id="btn-fmt-focus" class="iv-fmt-item iv-fmt-control" title="포커스 모드 변경 (문장/문단/끄기) [Cmd+/]">
+          <span id="label-fmt-focus">포커스: 문장</span> ↕
+        </button>
+        <button id="btn-fmt-lock" class="iv-fmt-item iv-fmt-control" title="타자기 센터 락 토글 (화면 중앙 50% 고정)">
+          <span id="label-fmt-lock">타자기: 중앙</span> ↕
+        </button>
+        <button id="btn-fmt-theme" class="iv-fmt-item iv-fmt-control" title="테마 변경 (Paper / Dark / Sepia / Midnight)">
+          <span id="label-fmt-theme">테마: Paper</span> ↕
+        </button>
       </div>
 
       <div class="iv-format-right">

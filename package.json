@@ -14,6 +14,7 @@
   "categories": [
     "Other"
   ],
+  "icon": "assets/logo.png",
   "activationEvents": [
     "onCustomEditor:iv-writer.editor"
   ],
@@ -34,14 +35,18 @@
             "filenamePattern": "*.txt"
           }
         ],
-        "priority": "option"
+        "priority": "default"
       }
     ],
     "commands": [
       {
         "command": "iv-writer.openWriterMode",
         "title": "iV Writer: Open in Writer Mode",
-        "category": "iV Writer"
+        "category": "iV Writer",
+        "icon": {
+          "light": "./assets/logo.png",
+          "dark": "./assets/logo.png"
+        }
       },
       {
         "command": "iv-writer.toggleFocusMode",
@@ -71,11 +76,6 @@
       {
         "command": "iv-writer.showQuickMenu",
         "title": "iV Writer: Show Quick Menu",
-        "category": "iV Writer"
-      },
-      {
-        "command": "iv-writer.applyPreset",
-        "title": "iV Writer: Apply Writing Preset",
         "category": "iV Writer"
       },
       {

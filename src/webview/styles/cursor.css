@@ -1,4 +1,4 @@
-/* Caret & Cursor Styles */
+/* Caret & Cursor Styles (2.5px Rounded Pill Sky Blue Caret rgb(89, 193, 250)) */
 
 @keyframes iv-cursor-fade {
   0%, 100% {
@@ -20,34 +20,57 @@
   }
 }
 
-.cm-cursor {
-  border-left-color: var(--iv-cursor-color) !important;
-  border-left-width: var(--iv-cursor-width, 2px) !important;
+/* Caret Color for Content & CodeMirror Elements */
+.cm-content,
+.cm-editor,
+.cm-line,
+.cm-scroller {
+  caret-color: var(--iv-cursor-color, rgb(89, 193, 250)) !important;
 }
 
-body[data-cursor-anim="fade"] .cm-cursor {
+/* Smooth 2.5px Rounded Bar Cursor */
+.cm-cursor,
+.cm-cursor-primary,
+.cm-dropCursor,
+.cm-cursorLayer .cm-cursor {
+  border-left: 2.5px solid var(--iv-cursor-color, rgb(89, 193, 250)) !important;
+  border-left-color: var(--iv-cursor-color, rgb(89, 193, 250)) !important;
+  border-left-width: 2.5px !important;
+  border-radius: 2px !important;
+  color: var(--iv-cursor-color, rgb(89, 193, 250)) !important;
+  box-sizing: content-box !important;
+}
+
+body[data-cursor-anim="fade"] .cm-cursor,
+body[data-cursor-anim="fade"] .cm-cursorLayer .cm-cursor {
   animation: iv-cursor-fade 1.1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
-body[data-cursor-anim="pulse"] .cm-cursor {
+body[data-cursor-anim="pulse"] .cm-cursor,
+body[data-cursor-anim="pulse"] .cm-cursorLayer .cm-cursor {
   animation: iv-cursor-pulse 1.1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
-body[data-cursor-anim="solid"] .cm-cursor {
+body[data-cursor-anim="solid"] .cm-cursor,
+body[data-cursor-anim="solid"] .cm-cursorLayer .cm-cursor {
   animation: none !important;
   opacity: 1 !important;
 }
 
 /* Block Cursor Style */
-body[data-cursor-style="block"] .cm-cursor {
+body[data-cursor-style="block"] .cm-cursor,
+body[data-cursor-style="block"] .cm-cursorLayer .cm-cursor {
   border-left-width: 0.55em !important;
+  border-radius: 2px !important;
   opacity: 0.5;
 }
 
 /* Underline Cursor Style */
-body[data-cursor-style="underline"] .cm-cursor {
+body[data-cursor-style="underline"] .cm-cursor,
+body[data-cursor-style="underline"] .cm-cursorLayer .cm-cursor {
   border-left-width: 0 !important;
-  border-bottom: 2px solid var(--iv-cursor-color) !important;
-  height: 2px !important;
-  margin-top: calc(var(--iv-font-size, 19px) * var(--iv-line-height, 1.75) - 4px);
+  border-bottom: 2.5px solid var(--iv-cursor-color, rgb(89, 193, 250)) !important;
+  border-radius: 2px !important;
+  height: 2.5px !important;
+  margin-top: calc(var(--iv-font-size, 19px) * var(--iv-line-height, 1.8) - 4px);
 }

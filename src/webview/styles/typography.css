@@ -1,52 +1,95 @@
-/* Typography & Editor Content Styles */
+/* Typography & Editor Content Styles (Spacious & Breathable Typography) */
 
 .cm-editor {
   font-family: var(--iv-font-family, "iA Writer Duo", "iA Writer Mono", "SF Mono", Menlo, Monaco, "Pretendard", monospace);
-  font-size: var(--iv-font-size, 19px);
-  line-height: var(--iv-line-height, 1.8);
-  letter-spacing: var(--iv-letter-spacing, -0.01em);
+  font-size: var(--iv-font-size, 19.5px);
+  line-height: var(--iv-line-height, 2.0);
+  letter-spacing: var(--iv-letter-spacing, 0.015em);
   color: var(--iv-fg);
   background-color: var(--iv-bg);
   height: 100%;
+  outline: none !important;
 }
 
+/* Base Content Layout */
 .cm-content {
-  max-width: var(--iv-max-width, 680px);
+  max-width: var(--iv-max-width, 580px);
   margin: 0 auto;
-  padding: 45vh 32px 55vh 32px; /* Center-aligned typewriter scrolling: active line locked at 50% */
-  caret-color: var(--iv-cursor-color);
+  padding-left: min(96px, 14vw) !important;
+  padding-right: min(96px, 14vw) !important;
+  caret-color: var(--iv-cursor-color, rgb(89, 193, 250)) !important;
   word-break: break-word;
+  box-sizing: border-box;
+  outline: none !important;
+  transition: padding-top 0.2s ease, padding-bottom 0.2s ease;
+}
+
+/* Center Lock Mode (Typewriter 50% screen center lock) */
+body[data-center-lock="true"] .cm-content {
+  padding-top: calc(50vh - 2em) !important;
+  padding-bottom: calc(50vh - 2em) !important;
+  min-height: 150vh !important;
+}
+
+/* Free Scroll Mode (Normal top-aligned document writing) */
+body[data-center-lock="false"] .cm-content {
+  padding-top: 48px !important;
+  padding-bottom: 120px !important;
+  min-height: 100% !important;
 }
 
 .cm-line {
-  padding: 0;
+  position: relative;
+  padding: 2px 0;
+  outline: none !important;
+}
+
+/* iA Writer Signature Outdented Heading Marks (#, ##, ###, ####) */
+.iv-heading-mark {
+  position: absolute !important;
+  transform: translateX(-100%) !important;
+  padding-right: 0.4em !important;
+  font-family: inherit !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.05em !important;
+  color: var(--iv-syntax-muted, rgb(198, 196, 194)) !important;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  white-space: nowrap !important;
+  text-align: right !important;
+  display: inline-block !important;
+}
+
+/* Active line gets dark heading marks */
+.cm-line:focus-within .iv-heading-mark {
+  color: var(--iv-fg) !important;
 }
 
 /* Markdown Subtle Formatting (iA Writer WYSIWYM) */
 .cm-header-1 {
-  font-size: 1.4em;
+  font-size: 1.45em;
   font-weight: 700;
-  line-height: 1.35;
-  margin-top: 1.4em;
-  margin-bottom: 0.4em;
+  line-height: 1.4;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
   color: var(--iv-fg);
 }
 
 .cm-header-2 {
-  font-size: 1.2em;
+  font-size: 1.25em;
   font-weight: 600;
-  line-height: 1.35;
-  margin-top: 1.2em;
-  margin-bottom: 0.3em;
+  line-height: 1.4;
+  margin-top: 1.3em;
+  margin-bottom: 0.4em;
   color: var(--iv-fg);
 }
 
 .cm-header-3 {
-  font-size: 1.1em;
+  font-size: 1.15em;
   font-weight: 600;
-  line-height: 1.4;
-  margin-top: 1.0em;
-  margin-bottom: 0.2em;
+  line-height: 1.45;
+  margin-top: 1.1em;
+  margin-bottom: 0.3em;
   color: var(--iv-fg);
 }
 
@@ -62,7 +105,7 @@
 .cm-inline-code, .cm-monospace {
   font-family: "iA Writer Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.9em;
-  padding: 2px 6px;
+  padding: 3px 6px;
   border-radius: 4px;
   background-color: var(--iv-code-bg);
   color: var(--iv-fg);
@@ -93,6 +136,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 6px;
+  outline: none !important;
 }
 
 .cm-search input[type="text"] {
@@ -107,7 +151,7 @@
 }
 
 .cm-search input[type="text"]:focus {
-  border-color: var(--iv-cursor-color);
+  border-color: var(--iv-cursor-color, rgb(89, 193, 250));
 }
 
 .cm-search button {
@@ -133,6 +177,6 @@
 
 .cm-searchMatch-selected {
   background-color: rgba(255, 204, 0, 0.7) !important;
-  outline: 1px solid var(--iv-cursor-color);
+  outline: 1px solid var(--iv-cursor-color, rgb(89, 193, 250));
   opacity: 1.0 !important;
 }

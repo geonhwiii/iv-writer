@@ -79,4 +79,13 @@ export type WebviewToHostMessage =
     }
   | {
       type: 'SHOW_MENU';
+    }
+  | {
+      type: 'REOPEN_DEFAULT';
+    }
+  | {
+      type: 'CLOSE_TAB';
+    }
+  | {
+      type: 'TOGGLE_FULLSCREEN';
     };
