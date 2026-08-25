@@ -11,12 +11,12 @@
   outline: none !important;
 }
 
-/* Base Content Layout */
+/* Base Content Layout (Spacious, balanced and perfectly centered) */
 .cm-content {
-  max-width: var(--iv-max-width, 580px);
+  max-width: var(--iv-max-width, 760px);
   margin: 0 auto;
-  padding-left: min(96px, 14vw) !important;
-  padding-right: min(96px, 14vw) !important;
+  padding-left: clamp(24px, 5vw, 56px) !important;
+  padding-right: clamp(24px, 5vw, 56px) !important;
   caret-color: var(--iv-cursor-color, rgb(89, 193, 250)) !important;
   word-break: break-word;
   box-sizing: border-box;

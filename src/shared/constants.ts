@@ -16,7 +16,7 @@ export const DEFAULT_SETTINGS: IVWriterSettings = {
     lineHeight: 1.8,
     letterSpacing: -0.01,
     paragraphSpacing: 1.6,
-    maxWidth: 680,
+    maxWidth: 760,
   },
   theme: {
     preset: 'paper',

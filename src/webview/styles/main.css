@@ -196,7 +196,7 @@ body {
 }
 
 /* ==========================================================================
-   Markdown Preview View (iA Writer Clean Typography)
+   Markdown Preview View (iA Writer Clean Typography - Matches Editor Layout)
    ========================================================================== */
 .iv-preview-container {
   flex: 1;
@@ -204,8 +204,8 @@ body {
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 48px min(96px, 14vw) 120px min(96px, 14vw);
-  max-width: 580px;
+  padding: 48px clamp(24px, 5vw, 56px) 120px clamp(24px, 5vw, 56px);
+  max-width: var(--iv-max-width, 760px);
   margin: 0 auto;
   font-family: var(--iv-font-family, "iA Writer Duo", "iA Writer Mono", "SF Mono", Menlo, Monaco, "Pretendard", monospace);
   font-size: 19.5px;
