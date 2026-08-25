@@ -2,7 +2,7 @@
   "name": "iv-writer",
   "displayName": "iV Writer",
   "description": "Writer Mode on VSCode",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "gunwww",
   "repository": {
     "type": "git",
