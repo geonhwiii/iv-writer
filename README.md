@@ -13,11 +13,19 @@
   <img src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" alt="License" />
 </p>
 
+<p align="center">
+  <a href="README.en.md">English</a> | <b>한국어</b>
+</p>
+
+<p align="center">
+  <img src="assets/screenshot.png" alt="iV Writer Preview" width="100%" />
+</p>
+
 ---
 
 ## ✨ 주요 기능
 
-- **포커스 모드 (Focus Mode)**: 현재 작성 중인 문장 또는 문단만 또렷하게 남기고, 주변 문장은 자연스럽게 딤 처리합니다. (`Cmd + /`)
+- **포커스 모드 (Focus Mode)**: 현재 작성 중인 문장 또는 문단만 또렷하게 남기고, 주변 문장은 자연스럽게 딤 처리합니다. (`Cmd + /` / `Ctrl + /`)
 - **타자기 모드 (Typewriter Center Lock)**: 커서를 항상 화면 중앙(50%)에 안정적으로 고정하여 시선 이동 없이 편안하게 작성합니다.
 - **헤딩 마크다운 아웃덴트 (Outdented Headings)**: 헤딩 기호(`#`, `##` 등)가 본문 좌측 여백으로 분리 배치되어, 모든 텍스트가 시작선에 완벽하게 수직 1열 정렬됩니다.
 - **스마트 자동 숨김 (Auto-Hide HUD)**: 글을 타이핑하는 동안에는 상하단 툴바가 자동으로 숨겨져 몰입을 돕고, 스크롤하거나 창에서 포커스가 벗어나면 다시 나타납니다.
